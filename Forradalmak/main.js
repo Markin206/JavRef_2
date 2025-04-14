@@ -12,11 +12,25 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
     return div;//vissza adjuk a div értéket
 }
 
-const containerDiv = makeDiv('container');//a containerDiv változóban létrehozzuk a containert a makeDiv függvénnyel
-document.body.appendChild(containerDiv);//a containerDiv változót hozzáadjuk a body-hoz
-const tableDiv = makeDiv('table');//a tableDiv változóban létrehozzuk a table-t a makeDiv függvénnyel
+const containerDiv = makeDiv('container');//létrehozzuk a container osztályú divet a makeDiv függvényel
+document.body.appendChild(containerDiv);//a létrehozott containert hozzáadjuk a testhez
+const tableDiv = makeDiv('table');//létrehozzuk a table osztályú divet a makeDiv függvényel
+const tableSim = document.createElement('table');//létrehozunk egy táblázatott
+tableDiv.appendChild(tableSim);//hozzáadjuk a table osztályú divhez a táblázatott
+const tableHead = document.createElement('thead');//létrehozzuk a fejlécet a táblázattnak
+tableSim.appendChild(tableHead);//a fejlécet hozzáadjuk táblázathoz
+const tableHeadRow =  document.createElement('tr');//létrehozzuk a fejléc sorát
+tableHead.appendChild(tableHeadRow)//a fejléc sorát hozzáadjuk a fejléchez
+const theadCells = ['név', 'születési dátum', 'irányítószám'];//létrehozzunk egy string típusú tömböt amely tartalmazza 'név', 'születési dátum', 'irányítószám' értéket amely a táblázat fejléce lesz
+for(const cellContent of theadCells){// a tömbön végigiterálunk cellContent néven
+    const thcell = document.createElement('th');//létrehozzuk a fejlécnek cella elemét
+    thcell.innerText = cellContent;//a cella belső értéket a tömb egyik eleme lesz
+    tableHeadRow.appendChild(thcell);//a cellát hozzáadjuk a fejléc sorához
+}
+const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzsét
+tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
 
-const formDiv = makeDiv('form');//a formDiv változóban létrehozzuk a div-et a makeDiv függvénnyel
+const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
 
-containerDiv.appendChild(tableDiv);//a tableDiv változó amely tartalmazza a table osztályú div-et hozzá adjuk a containerDiv-hez
-containerDiv.appendChild(formDiv);//a formDiv változó amely tartalmazza a div osztályú div-et hozzá adjuk a containerDiv-hez
+containerDiv.appendChild(tableDiv);//a tablaDiv-et hozzáadjuk a containerDivhez
+containerDiv.appendChild(formDiv);//a formDiv-et hozzáadjuk a containerDivhez
