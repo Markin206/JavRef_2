@@ -1,5 +1,6 @@
 .container {
     background-color: green;
+    padding-bottom: 12px;
 }
 
 .table {
@@ -7,5 +8,16 @@
 }
 
 .form {
-    background-color: purple;
+    margin-top: 12px;
+    background-color: pink;
+}
+
+table, tr, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.field{
+    margin-bottom: 12px;
+    background-color: antiquewhite;
 }
