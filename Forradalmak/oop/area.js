@@ -3,34 +3,38 @@
  * az osztályban lévő konstruktorban történik meg a div-ek létrehozása
  */
 class Area{
-    /**
-     * A konstruktor egy className string típusu paramtérerel dolgozik
-     * elösször a konstruktorban kiválasztjuk a containeroop osztályt tartalmazó divet amely containerDiv változó lesz
-     * azon esetben hogyha containerDiv null akkor a konstruktor létrehozza a divet amely tartalmazza a containeroop osztályt
-     * ezek után a konstruktorban létrehozzuk a divet
-     * a divhez hozzáadjuk a className tulajdonságát amely a bemeneti paramétere lesz a konstruktornak
-     * és aztán a divet hozzáadjuk a containerDiv-hez
-     * @param {string} className //a string paraméter amely a osztály nevet tartalmazza
-     */
+    
     #div;//egy privát tulajdonsága a area osztálynak
 
     /**
      * getter függvény amely eléri azt hogy a privát tulajdonság el lehessen érni
+     * @returns {HTMLDivElement}a létrehozott div
      */
     get div(){
         return this.#div;//vissza tér a privát divvel
     }
-
+    /**
+     * A konstruktor feladata a div elkészítése és osztálya beállítása paraméter szerint a privátmetódus által létrejött containerben
+     * @param {string} className //a string paraméter amely a osztály nevet tartalmazza
+     */
     constructor(className){//konstruktor és string típusú className paramétere
+        const container = this.#getContainer();//meghívjuk a privátmetódust azon értelemben hogy kiválasszuk a containert
+        this.#div = document.createElement('div');//létrehozzuk a divet egy div nevű változóban
+        this.#div.className = className;//a div className tulajdonságához hozzá adjuk a className paramétert
+        container.appendChild(this.#div);//a div változót hozzáadjuk a container-hez
+    }
+    /**
+     * privát függvény amely elősször kiválasztja azon containert amely tartalmazza a .containeroop osztályt
+     * de egyben ha nem létezik ilyen container akkor létrehozz egyet
+     * @returns {HTMLDivElement} a visszatérő container div element
+     */
+    #getContainer(){
         let containerDiv = document.querySelector('.containeroop');//kiválasztjuk azokat a HTMLElementeket amely tartalmazzák a .containeroop osztályt és hozzáadjuk a containerDiv változóhoz
         if(!containerDiv){//ha a containerDiv null akkor belép
             containerDiv = document.createElement('div');//létrehozz egy containerDiv változó nevű div elemet
             containerDiv.className = 'containeroop';//a divhez className tulajdonságnak megkapja a containeroop-t
             document.body.appendChild(containerDiv);//a testtőrzshöz hozzáadjuk a container divet
-        }
-        this.#div = document.createElement('div');//létrehozzuk a divet egy div nevű változóban
-        this.#div.className = className;//a div className tulajdonságához hozzá adjuk a className paramétert
-        containerDiv.appendChild(this.#div);//a div változót hozzáadjuk a containerDiv-hez
+        }return containerDiv;//vissza térítjük a container divet
     }
 }
 
@@ -39,26 +43,36 @@ class Area{
  * a Table ősosztálya az Area osztály
  */
 class Table extends Area {
+    
     /**
-     * a konstruktorban létrehozzuk a táblázat fejlécét és hozzáadjuk a bodyhoz
-     * @param {string} cssClass a paraméter amely az osztály nevet tartalmazza és aszerint hozza létre a divet
+     * meghívjuk az ősosztályban lévő konstruktort és létrehozzuk a táblázatott
+     * @param {string} cssOsztaly 
      */
-    constructor(cssClass){
-        super(cssClass);//meghívjuk az ősosztályban lévő konstruktort a cssClass paraméterrel
-        const table = document.createElement('table');//létrehozzuk a table elementet
-        this.div.appendChild(table);//a divhez hozzáadjuk a táblázatot
-        const thead = document.createElement('thead');//a táblázat fejlécét létrehozzuk
-        table.appendChild(thead);//hozzáadjuk a fejlécet a táblázathoz
-        const theadRow = document.createElement('tr');//létrehozzuk a fejlécben lévő sort
-        thead.appendChild(theadRow);//a fejlécben lévő sort hozzáadjuk a fejléchez
-        const theadCells = ['név', 'születési dátum', 'irányítószám'];//egy tömb amely tartalmazza a fejléc string értékeit
-        for(const cellContent of theadCells){//a tömb elemein végig iterálunk
-            const thcell = document.createElement('th');//létrehozzuk a fejléc cellát
-            thcell.innerText = cellContent;//a fejléc cella megkapja a tömb elemét mint tartalom
-            theadRow.appendChild(thcell);//a cellát hozzáadjuk a sorhoz
+    constructor(cssOsztaly){
+        super(cssOsztaly);
+        const tbody = this.#createTable();
+    }
+
+    /**
+     * a privát függvény azt végzi el hogy a táblázatot létrehozzuk és fejlécét feltöltjük
+     * @returns {HTMLTableSectionElement}//a visszatérő táblázat tőrzse
+     */
+    #createTable(){
+        const table = document.createElement('table');//a táblázatott létrehozom
+        this.div.appendChild(table);//hozzáadom a táblázatott a divhez
+        const thead = document.createElement('thead');//a fejlécet létrehozom
+        table.appendChild(thead);//a fejlécet hozzáadom a tablehöz
+        const theadRow = document.createElement('tr');//létrehozoma fejléc sorát
+        thead.appendChild(theadRow);//hozzáadom a sort a fejléchez
+        const theadCells = ['név', 'születési dátum', 'irányítószám'];//egy tömb amely tartalmazza a fejléc string típusu értékeit
+        for(const cellContent of theadCells){//végig iterálunk a tömbön
+            const thcell = document.createElement('th');//létrehozunk egy fejlcéc ellát
+            thcell.innerText = cellContent;//a fejléc cella tartalmát feltöltjük az elemel
+            theadRow.appendChild(thcell);//a cellát hozzáadjuk a fejléc sorhoz
         }
         const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzsét
-        table.appendChild(tbody);//a táblázat tőrzsét hozzáadjuk a táblázathoz
+        table.appendChild(tbody);//a tbodyt hozzáadjuk a táblázathoz
+        return tbody;//visszatérünk a tbodyval
     }
 }
 
@@ -70,15 +84,12 @@ class Form extends Area {
     /**
      * a form létrehozásáért felelős konstruktor
      * @param {string} cssClass a paraméter amely az osztály nevet tartalmazza és aszerint hozza létre a divet
+     * @param {Array} fieldElementList a lista amely tartalmazza a field ID-ját és tartalmát
      */
-    constructor(cssClass){
+    constructor(cssClass, fieldElementList){
         super(cssClass);//meghívja a Area-ban lévő konstruktort a cssClass paraméterrel  
         const form = document.createElement('form');//létrehozzuk a form elementet
         this.div.appendChild(form);//hozzáadjuk a formot a divhez
-        const fieldElementList = [//egy lista amely tartalmazza a field ID-ját és a tartalmát
-        {fieldid: 'name',fieldLabel: 'név'},//név cella
-        {fieldid: 'birth',fieldLabel: 'születési év'},//születési év cella
-        {fieldid: 'zipcode',fieldLabel: 'irányítószám'}]//irányítószám cella
         
         for(const fieldElement of fieldElementList){//végig iterálunk a lista elemein
             const field = makeDiv('field');//létrehozunk egy field osztályú divet a makeDiv függvénnyel
