@@ -1,4 +1,4 @@
-
+const array = [];//egy üres tömb amely késöbb tárolni fog táblázatok adatait
 /**
  * létrehoztunk egy függvényt amely egy className string paramétert megkapja,
  * és a div létrehozása után a div tulajdonságként megkapja a className paramétert,
@@ -11,6 +11,8 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
     div.className = className;//a div className tulajdonságához hozzá adjuk a className paramétert
     return div;//vissza adjuk a div értéket
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------
 
 const containerDiv = makeDiv('container');//létrehozzuk a container osztályú divet a makeDiv függvényel
 document.body.appendChild(containerDiv);//a létrehozott containert hozzáadjuk a testhez
@@ -29,6 +31,8 @@ for(const cellContent of theadCells){// a tömbön végigiterálunk cellContent 
 }
 const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzsét
 tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
+
+//--------------------------------------------------------------------------------------------------------------------------------------
 
 const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
 
@@ -52,10 +56,39 @@ for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláun
     field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
     field.appendChild(input)//az inputot hozzáadjuk a divhez
 }
-
 const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
 buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
 formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
+
+/**
+ * létrehozunk egy addEventListener függvényt amely a submit esetén fut le
+ * a függvény feladata a inputok adatai behelyezése a cellákba
+ */
+formSim.addEventListener('submit', (e)=> {
+    e.preventDefault();//megoldja hogy a weboldal betöltésénél ne fusson le a program
+    const valueObject = {}//létrehozunk egy objektumot
+    const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
+    for(const inputField of inputFields){//végig iterálunk az inputFields-en
+        valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
+    }
+    array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
+    const tableBodyRow = document.createElement('tr');//létrehozzuk a táblázat tőrzsének sorát
+    tbody.appendChild(tableBodyRow);//hozzáadjuk a tbodyhoz a sort
+    
+    const nameCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a neveket
+    nameCell.textContent = valueObject.name;//a cellát feltöltjük a valueObject "name" tulajdonság értékével
+    tableBodyRow.appendChild(nameCell);//a cellát hozzáadjuk a sorhoz
+
+    const birthCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a születés éveket
+    birthCell.textContent = valueObject.birth;//a cellát feltöltjük a valueObject "birth" tulajdonság értékével
+    tableBodyRow.appendChild(birthCell);//a cellát hozzáadjuk a sorhoz
+
+    const zipCodeCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja az irányítószámokat
+    zipCodeCell.textContent = valueObject.zipcode;//a cellát feltöltjük a valueObject "zipcode" tulajdonság értékével
+    tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
+})
+//--------------------------------------------------------------------------------------------------------------------------------------
+
 
 containerDiv.appendChild(tableDiv);//a tablaDiv-et hozzáadjuk a containerDivhez
 containerDiv.appendChild(formDiv);//a formDiv-et hozzáadjuk a containerDivhez
