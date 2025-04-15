@@ -34,18 +34,11 @@ const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt 
 
 const formSim = document.createElement('form');//létrehozzuk a form elementet
 formDiv.appendChild(formSim)//a formot hozzáadjuk a formDivhez
-const fieldElementList = [{//létrehozunk egy tömböt amely tartalmaz 2 tulajdonságot fieldid amely tartalmazza a field Id-jét és fieldLabel amely tartalmazza a szöveget
-    fieldid: 'name',//a fieldid tulajdonság megkapja a name string értéket
-    fieldLabel: 'név'//a fieldLabel megkapja a név string értéket
-},
-{
-    fieldid: 'birth',//a fieldid tulajdonság megkapja a birth string értéket
-    fieldLabel: 'születési év'// a field label tulajdonság megkapja a születési év string értéket
-},
-{
-    fieldid: 'zipcode',//a fieldid tulajdonság megkapja a zipcode string értéket
-    fieldLabel: 'irányítószám'// a field label tulajdonság megkapja a irányítószám string értéket
-}]
+
+const fieldElementList = [//egy lista amely tartalmazza a field ID-ját és a tartalmát
+    {fieldid: 'name',fieldLabel: 'név'},//név cella
+    {fieldid: 'birth',fieldLabel: 'születési év'},//születési év cella
+    {fieldid: 'zipcode',fieldLabel: 'irányítószám'}]//irányítószám cella
 
 for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláunk a fieldElementList tömbön és benne létrehozzuk a fieldeket annak label-jét, input-ját és tulajdonságait
     const field = makeDiv('field');//létrehozzuk a field osztályú divet a makeDiv függvénnyel
