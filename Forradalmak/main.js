@@ -69,7 +69,6 @@ formSim.addEventListener('submit', (e)=> {
     e.preventDefault();//megoldja hogy a weboldal betöltésénél ne fusson le a program
     const valueObject = {}//létrehozunk egy objektumot
     const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
-    for(const inputField of inputFields){//végig iterálunk az inputFields-en
         
     let valid = true;//létrehozunk egy bool változót amely alapértelmezett értéke true
     for(const inputField of inputFields){//végig iterálunk az inputokon
@@ -84,7 +83,7 @@ formSim.addEventListener('submit', (e)=> {
             valid = false;//a bool értékét falsera rakja
         }
         valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
-    }}
+    }
 
     if(valid){//megnézi a valid bool értékét
     array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
@@ -146,4 +145,22 @@ fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely a
        }
     }
     fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
+})
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+const exportButton = document.createElement('button');//létrehozunk egy gombot
+exportButton.textContent = 'Letöltés';//a gomb tartalmát kitöltjük egy string értékkel
+containerDiv.appendChild(exportButton);//a gombot hozzáadjuk a container divhez
+exportButton.addEventListener('click', () => {//addeventlistener amely a click-et figyeli a gombnál
+    const link = document.createElement('a');//létrehozunk egy anchor linket
+    const contentArray = ['name;birth;zipcode']//létrehozunk egy tömböt amely tartalmaz string értékeket
+    for(const pers of array){//végig iterálunk a tömbön amely tárolta a táblázat elemeit
+        contentArray.push(`${pers.name};${pers.birth};${pers.zipcode}`);//a contentarray tömbe felpusholjuk a a táblázat elemeit
+    }
+    const content = contentArray.join('\n');//a tömbött sorvégenként kombináljuk egy string-é
+    const file = new Blob([content])//eltároljuk az egységes stringet egy bloba mint nyers bináris adat
+    link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+    link.download = 'newdata.csv'//letöltjük az új fájlt newdata.csv néven
+    link.click();//linkek meghívjuk a beépített click függvényt
+    URL.revokeObjectURL(link.href);//kiürítjük az URL-t
 })
