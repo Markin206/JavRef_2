@@ -1,6 +1,7 @@
 /**
  * Az osztály fele a személyek kezeléséről
  * Egyben tárolja személyeket és végez callback függvényeket meghívás esetén
+ * és mostantól tartalmazza a fájl exportáláshoz való tárolást
  */
 class Manager{
     #array;//privát tulajdonság/property
@@ -28,5 +29,13 @@ class Manager{
     addPerson(person){
         this.#array.push(person);//hozzáaddja a személyt a tömbhöz
         this.#addPersonCallback(person);//meghívja a callbacket a person paraméterrel
+    }
+
+    generateExportString(){
+        const result = ['name;birth;zipcode']
+        for(const person of this.#array){
+            result.push(`${person.name};${person.birth};${person.zipcode}`);
+        }
+        return result.join('\n');
     }
 }

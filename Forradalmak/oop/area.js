@@ -123,7 +123,6 @@ class Form extends Area {
         this.#formFieldArray = []; //a privát változónak megadunk egy üres tömböt
         const form = document.createElement('form');//létrehozzuk a form elementet
         this.div.appendChild(form);//hozzáadjuk a formot a divhez
-
         for(const fieldElement of fieldElementList){//végig iterálunk a megadott tömbön
             const formField = new FormField(fieldElement.fieldid, fieldElement.fieldLabel);//létrehozunk egy új FormFieldet
             this.#formFieldArray.push(formField);//a privát tömbbe bepusholjuk a formfieldet
@@ -150,6 +149,55 @@ class Form extends Area {
             const person = new Person(valueObject.name, Number(valueObject.birth), Number(valueObject.zipcode));//létrehozunk egy új személyt
             this.manager.addPerson(person);//a személyt hozzáadjuk a managerhez
             }
+        })
+    }
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * az area leszarmazott osztálya
+ * az osztály feladata a fájlok feltöltése a weboldalra
+ */
+class UploadDownload extends Area{
+    /**
+     * a konstruktor létrehoz egy gombot amely text filet
+     * olvass be és a fájlt táblázatba helyezi
+     * @param {string} cssClass a div osztalya
+     * @param {objekt} manager ez foglalkozik a személyel
+     */
+    constructor(cssClass, manager){
+        super(cssClass, manager);//meghívjuk az area konstruktorát
+        const input = document.createElement('input')//létrehozunk egy input elementet
+        input.id ='fileinput';//az input id-ja fileInput lesz
+        input.type ='file'//input típusa pedig file
+        this.div.appendChild(input);//hozzáadjuk a divhez
+        input.addEventListener('change', (e)=>{//egy addeventlistener amely nézi a htmlElement változásait
+            const file = e.target.files[0];//kiválasztjuk a fájlt
+            const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
+            fileReader.onload = () => {//beolvassuk a fájlt
+               const fileLines = fileReader.result.split('\n')//feldaraboljuk a fájlt sorvégek szerint
+               const removedHeadLines = fileLines.slice(1);//kiszedjük a tömböt egy külön tömbbe amely nem tartalmazza a fejlécet
+               for(const line of removedHeadLines){//végig járunk a tömbön (sorok)
+                    const trimmedLine = line.trim();//kiszedjük a szóközöket szavak elején és végén
+                    const fields = trimmedLine.split(';');//szét szedjük a sort
+                    const person = new Person(fields[0], Number(fields[1]), Number(fields[2]))//létrehozunk egy új személyt amelynek 2. és 3. eleme Number típusú lesz
+                    this.manager.addPerson(person)//az új személyt hozzáadjuk a managerhez
+               }
+            }
+            fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
+        })
+
+        const exportButton = document.createElement('button');//létrehozunk egy gombot
+        exportButton.textContent = 'Letöltés';//a gomb tartalmát feltöltjük egy string értékel
+        this.div.appendChild(exportButton);//a gombot hozzárendeljük a divhez
+        exportButton.addEventListener('click', () => {//egy addeventlistener amely click esemény esetén lefutt
+            const link = document.createElement('a');//létrehozunk egy link anchor
+            const content = this.manager.generateExportString();//meghívjuk a managerben a generateExportString metódust
+            const file = new Blob([content])//az egységes stringet eltároljuk egy blob objektumba nyers bináris adatként
+            link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+            link.download = 'newdata.csv'//a letöltés által newdata.csv néven töltjük le a fájlt
+            link.click();//meghívjuk a click függvényt
+            URL.revokeObjectURL(link.href);//kiürítjük a href URL-jét
         })
     }
 }
@@ -196,7 +244,6 @@ class FormField {
         this.#errorElement = document.createElement('span');//létrehozunk egy span-t amely az errort fogja kiirni
         this.#errorElement.className = 'error';//a span megkapja az error-t mint osztály nevet
     }
-
     /**
      * a függvény felese a field div létrehozásáért
      * @returns {htmlDivElement} a visszaadott div
@@ -210,40 +257,5 @@ class FormField {
             div.appendChild(element); //hozzáaddjuk a divhez az elemet
         }
         return div;//visszatérünk a divvel
-    }
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-/**
- * az area leszarmazott osztálya
- * az osztály feladata a fájlok feltöltése a weboldalra
- */
-class Upload extends Area{
-    /**
-     * a konstruktor létrehoz egy gombot amely text filet
-     * olvass be és a fájlt táblázatba helyezi
-     * @param {string} cssClass a div osztalya
-     * @param {objekt} manager ez foglalkozik a személyel
-     */
-    constructor(cssClass, manager){
-        super(cssClass, manager);//meghívjuk az area konstruktorát
-        const input = document.createElement('input')//létrehozunk egy input elementet
-        input.id ='fileinput';//az input id-ja fileInput lesz
-        input.type ='file'//input típusa pedig file
-        this.div.appendChild(input);//hozzáadjuk a divhez
-        input.addEventListener('change', (e)=>{//egy addeventlistener amely nézi a htmlElement változásait
-            const file = e.target.files[0];//kiválasztjuk a fájlt
-            const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
-            fileReader.onload = () => {//beolvassuk a fájlt
-               const fileLines = fileReader.result.split('\n')//feldaraboljuk a fájlt sorvégek szerint
-               const removedHeadLines = fileLines.slice(1);//kiszedjük a tömböt egy külön tömbbe amely nem tartalmazza a fejlécet
-               for(const line of removedHeadLines){//végig járunk a tömbön (sorok)
-                    const trimmedLine = line.trim();//kiszedjük a szóközöket szavak elején és végén
-                    const fields = trimmedLine.split(';');//szét szedjük a sort
-                    const person = new Person(fields[0], Number(fields[1]), Number(fields[2]))//létrehozunk egy új személyt amelynek 2. és 3. eleme Number típusú lesz
-                    this.manager.addPerson(person)//az új személyt hozzáadjuk a managerhez
-               }
-            }
-            fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
-        })
     }
 }
