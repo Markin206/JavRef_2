@@ -55,6 +55,9 @@ for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláun
     input.id = fieldElement.fieldid;//az input id-ját megadjuk az elem fieldid tulajdonságával
     field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
     field.appendChild(input)//az inputot hozzáadjuk a divhez
+    const error = document.createElement('span');//létrehozunk egy span elementet
+    error.className = 'error';//az osztály neve error lesz
+    field.appendChild(error);//hozzáadjuk a spant a fieldhez
 }
 const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
 buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
@@ -69,8 +72,23 @@ formSim.addEventListener('submit', (e)=> {
     const valueObject = {}//létrehozunk egy objektumot
     const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
     for(const inputField of inputFields){//végig iterálunk az inputFields-en
+        
+    let valid = true;//létrehozunk egy bool változót amely alapértelmezett értéke true
+    for(const inputField of inputFields){//végig iterálunk az inputokon
+        const error = inputField.parentElement.querySelector('.error');//az inputoknak parent elementjénél kiválasztjuk az error osztályt rendelkező elementet
+        if(!error){//ha nincs semmilyen error akkor belép
+            console.error('nincs errorfield');//létrehozz egy error objektumot és kiiratja "nincs errorfield"
+            return;//visszatérés
+        }
+        error.textContent = '';//lenullázuk az error szövegét
+        if(inputField.value === ''){//ha inputField értéke null akkor belép
+            error.textContent = 'Kotelezo megadni';//kitölti az error tartalmát egy stringel
+            valid = false;//a bool értékét falsera rakja
+        }
         valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
-    }
+    }}
+
+    if(valid){//megnézi a valid bool értékét
     array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
     const tableBodyRow = document.createElement('tr');//létrehozzuk a táblázat tőrzsének sorát
     tbody.appendChild(tableBodyRow);//hozzáadjuk a tbodyhoz a sort
@@ -86,6 +104,7 @@ formSim.addEventListener('submit', (e)=> {
     const zipCodeCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja az irányítószámokat
     zipCodeCell.textContent = valueObject.zipcode;//a cellát feltöltjük a valueObject "zipcode" tulajdonság értékével
     tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
+    }
 })
 //--------------------------------------------------------------------------------------------------------------------------------------
 
