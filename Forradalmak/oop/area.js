@@ -133,13 +133,21 @@ class Form extends Area {
         form.appendChild(button)//a gombot hozzáadjuk a fromhoz
         form.addEventListener('submit', (e)=> {//az event listener amely azt figyeli hogy megtörtént a submit és ha igen akkor az inputokból lévő adatokat a cellákba rakja
             e.preventDefault();//megoldaja hogy a weboldal betöltésénél ne fusson le az addeventlistener
-            const inputFieldList = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot
             const valueObject = {};//létrehozunk egy tömböt amely az inputok értékeit nézi meg
-            for(const inputField of inputFieldList){//végig iterálunk a tömbön amely tartalmazza az input értékeit
-                valueObject[inputField.id] = inputField.value;//a valueObject tömbbe berakjuk az inputok értékeit
+            let valid = true;//létrehozunk egy bool változót amely alapértelmezet értéke true
+            
+            for(const inputField of this.#formFieldArray){//végig iterálunk a tömbön amely tartalmazza az input értékeit
+                inputField.error = '';//kiürítjük az error objektumot
+                if(inputField.value === ''){//ha az input értéke null akkor belép
+                    inputField.error = 'Kotelezo megadni'//az error objektumot létrehozza és feltöltjük egy string értékkel
+                    valid = false//a bool változó értékét falsera változtatjuk
+                }
+                valueObject[inputField.id] = inputField.value;//Betöltjük a valueObject tömbbe a inputok értékeit
             }
+            if(valid){//ha a valid bool változó igaz akkor le fut
             const person = new Person(valueObject.name, Number(valueObject.birth), Number(valueObject.zipcode));//létrehozunk egy új személyt
             this.manager.addPerson(person);//a személyt hozzáadjuk a managerhez
+            }
         })
     }
 }
