@@ -107,6 +107,9 @@ class Table extends Area {
  * a Form ősosztálya az Area osztály
  */
 class Form extends Area {
+
+    #formFieldArray;//létrehoztunk egy privát változónak
+
     /**
      * a form létrehozásáért felelős konstruktor
      * @param {string} cssClass a paraméter amely az osztály nevet tartalmazza és aszerint hozza létre a divet
@@ -115,20 +118,14 @@ class Form extends Area {
      */
     constructor(cssClass, fieldElementList, manager){
         super(cssClass, manager);//meghívja a Area-ban lévő konstruktort a cssClass paraméterrel  
+        this.#formFieldArray = []; //a privát változónak megadunk egy üres tömböt
         const form = document.createElement('form');//létrehozzuk a form elementet
         this.div.appendChild(form);//hozzáadjuk a formot a divhez
-        
-        for(const fieldElement of fieldElementList){//végig iterálunk a lista elemein
-            const field = makeDiv('field');//létrehozunk egy field osztályú divet a makeDiv függvénnyel
-            form.appendChild(field);//a fieldet hozzáadjuk a fromhoz
-            const label = document.createElement('label');//a field labeljét létrehozom
-            label.htmlFor = fieldElement.fieldid;//a label htmlFor tulajdonsága megkapja a fieldid elem tulajdonságot
-            label.textContent = fieldElement.fieldLabel;//a label tartalmát feltöltjük az elem fieldLabel tulajdonságával
-            field.appendChild(label)//hozzáadjuk a labelt a fieldhez
-            const input = document.createElement('input');//létrehozzuk a field inputját
-            input.id = fieldElement.fieldid;//az input id tulajdonsága megkapja az elem fieldid tulajdonságát
-            field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
-            field.appendChild(input)//az inputot hozzáadjuk a divhez
+
+        for(const fieldElement of fieldElementList){//végig iterálunk a megadott tömbön
+            const formField = new FormField(fieldElement.fieldid, fieldElement.fieldLabel);//létrehozunk egy új FormFieldet
+            this.#formFieldArray.push(formField);//a privát tömbbe bepusholjuk a formfieldet
+            form.appendChild(formField.getDiv());//a formhoz hozzadjuk a formfielden belül meghívott getDiv függvényt
         }
         
         const button = document.createElement('button');//létrehozzuk a gomb elementet
@@ -144,5 +141,63 @@ class Form extends Area {
             const person = new Person(valueObject.name, Number(valueObject.birth), Number(valueObject.zipcode));//létrehozunk egy új személyt
             this.manager.addPerson(person);//a személyt hozzáadjuk a managerhez
         })
+    }
+}
+
+/**
+ * Az osztály felelős a formon belüli input, labelek, spanek létrehozásáért egyben a fieldDiv létrehozásáért
+ */
+class FormField {
+    #id;//privát változó
+    #inputElement;//privát változó
+    #labelElement;//privát változó
+    #errorElement;//privát változó
+
+    get id(){//getter függvény az id-nak
+        return this.#id;//visszatér a privát id változóval
+    }
+
+    get value(){//getter függvény az inputElement értékének
+        return this.#inputElement.value;//visszatér az inputelement értékével
+    }
+
+    /**
+     * egy setter függvény amely által definiáljuk az error értékét
+     * @param {string} value 
+     */
+    set error(value){//setter függvény
+        this.#errorElement.textContent = value;//az errornak tartalma megkapja a paraméternek megadott értéket
+    }
+
+    /**
+     * a FormField konstruktora
+     * a konstruktor felelős a fieldek tartalmának létrehozásáért és feltöltéséért
+     * @param {string} id //a label és input ID-ja amely string típusu
+     * @param {string} labelContent //a label tartalma amely string típusu
+     */
+    constructor(id, labelContent){
+        this.#id = id;//a privát változó megkapja az id értékét
+        this.#labelElement = document.createElement('label');//létrehozunk egy label elmentet
+        this.#labelElement.htmlFor = id;//a label For-ja megkapja az id paramétert
+        this.#labelElement.textContent = labelContent;//a label tartalmát megkapja a labelContent paramétert
+        this.#inputElement = document.createElement('input');//létrehozom az input elementet
+        this.#inputElement.id = id;//az inputElement id tulajdonsága megkapja a id paramétert
+        this.#errorElement = document.createElement('span');//létrehozunk egy span-t amely az errort fogja kiirni
+        this.#errorElement.className = 'error';//a span megkapja az error-t mint osztály nevet
+    }
+
+    /**
+     * a függvény felese a field div létrehozásáért
+     * @returns {htmlDivElement} a visszaadott div
+     */
+    getDiv(){
+        const div = makeDiv('field');//létrehozunk egy field osztályú divet
+        const br1 = document.createElement('br')//létrehozunk egy sortörést
+        const br2 = document.createElement('br')//létrehozunk egy sortörést
+        const htmlElements = [this.#labelElement, br1, this.#inputElement, br2, this.#errorElement];//létrehoztunk egy tömböt és felépítjük hogy hogy fogkinézni a field
+        for(const element of htmlElements){//végig iterálunk a htmlElements tömbön
+            div.appendChild(element); //hozzáaddjuk a divhez az elemet
+        }
+        return div;//visszatérünk a divvel
     }
 }
