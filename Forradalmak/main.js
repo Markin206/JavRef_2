@@ -1,4 +1,6 @@
 const array = [];//egy üres tömb amely késöbb tárolni fog táblázatok adatait
+
+//--------------------------------------------------------------------------------------------------------------------------------------
 /**
  * létrehoztunk egy függvényt amely egy className string paramétert megkapja,
  * és a div létrehozása után a div tulajdonságként megkapja a className paramétert,
@@ -13,157 +15,184 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-const containerDiv = makeDiv('container');//létrehozzuk a container osztályú divet a makeDiv függvényel
-document.body.appendChild(containerDiv);//a létrehozott containert hozzáadjuk a testhez
-const tableDiv = makeDiv('table');//létrehozzuk a table osztályú divet a makeDiv függvényel
-const tableSim = document.createElement('table');//létrehozunk egy táblázatott
-tableDiv.appendChild(tableSim);//hozzáadjuk a table osztályú divhez a táblázatott
-const tableHead = document.createElement('thead');//létrehozzuk a fejlécet a táblázattnak
-tableSim.appendChild(tableHead);//a fejlécet hozzáadjuk táblázathoz
-const tableHeadRow =  document.createElement('tr');//létrehozzuk a fejléc sorát
-tableHead.appendChild(tableHeadRow)//a fejléc sorát hozzáadjuk a fejléchez
-const theadCells = ['név', 'születési dátum', 'irányítószám'];//létrehozzunk egy string típusú tömböt amely tartalmazza 'név', 'születési dátum', 'irányítószám' értéket amely a táblázat fejléce lesz
-for(const cellContent of theadCells){// a tömbön végigiterálunk cellContent néven
-    const thcell = document.createElement('th');//létrehozzuk a fejlécnek cella elemét
-    thcell.innerText = cellContent;//a cella belső értéket a tömb egyik eleme lesz
-    tableHeadRow.appendChild(thcell);//a cellát hozzáadjuk a fejléc sorához
-}
-const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzsét
-tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
-
-//--------------------------------------------------------------------------------------------------------------------------------------
-const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
-
-const formSim = document.createElement('form');//létrehozzuk a form elementet
-formDiv.appendChild(formSim)//a formot hozzáadjuk a formDivhez
-
-const fieldElementList = [//egy lista amely tartalmazza a field ID-ját és a tartalmát
-    {fieldid: 'name',fieldLabel: 'név'},//név cella
-    {fieldid: 'birth',fieldLabel: 'születési év'},//születési év cella
-    {fieldid: 'zipcode',fieldLabel: 'irányítószám'}]//irányítószám cella
-
-for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláunk a fieldElementList tömbön és benne létrehozzuk a fieldeket annak label-jét, input-ját és tulajdonságait
-    const field = makeDiv('field');//létrehozzuk a field osztályú divet a makeDiv függvénnyel
-    formSim.appendChild(field);//hozzáadjuk a field osztályú divet a formhoz
-    const label = document.createElement('label');//létrehozzuk a field label elementjét
-    label.htmlFor = fieldElement.fieldid;//a labelnek megadunk egy htmlFor tulajdonság ami az elem fieldid-ja lesz
-    label.textContent = fieldElement.fieldLabel;//a labelnek megadunk egy textContent tulajdonság ami az elem fieldLabelje lesz
-    field.appendChild(label)// a labelt hozzáadjuk a field osztályú divhez
-    const input = document.createElement('input');//létrehozzuk a field input elementjét
-    input.id = fieldElement.fieldid;//az input id-ját megadjuk az elem fieldid tulajdonságával
-    field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
-    field.appendChild(input)//az inputot hozzáadjuk a divhez
-    const error = document.createElement('span');//létrehozunk egy span elementet
-    error.className = 'error';//az osztály neve error lesz
-    field.appendChild(error);//hozzáadjuk a spant a fieldhez
-}
-const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
-buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
-formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
-
 /**
- * létrehozunk egy addEventListener függvényt amely a submit esetén fut le
- * a függvény feladata a inputok adatai behelyezése a cellákba
+ * A függvény feladata az inputok létrehozása és a megadott
+ * id és az input típusa alapján
+ * @param {string} id az input ID-ja
+ * @param {string} type az input típusa
+ * @returns {HTMLInputElement} a létrehozott input
  */
-formSim.addEventListener('submit', (e)=> {
-    e.preventDefault();//megoldja hogy a weboldal betöltésénél ne fusson le a program
-    const valueObject = {}//létrehozunk egy objektumot
-    const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
-        
-    let valid = true;//létrehozunk egy bool változót amely alapértelmezett értéke true
-    for(const inputField of inputFields){//végig iterálunk az inputokon
-        const error = inputField.parentElement.querySelector('.error');//az inputoknak parent elementjénél kiválasztjuk az error osztályt rendelkező elementet
-        if(!error){//ha nincs semmilyen error akkor belép
-            console.error('nincs errorfield');//létrehozz egy error objektumot és kiiratja "nincs errorfield"
-            return;//visszatérés
-        }
-        error.textContent = '';//lenullázuk az error szövegét
-        if(inputField.value === ''){//ha inputField értéke null akkor belép
-            error.textContent = 'Kotelezo megadni';//kitölti az error tartalmát egy stringel
-            valid = false;//a bool értékét falsera rakja
-        }
-        valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
-    }
-
-    if(valid){//megnézi a valid bool értékét
-    array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
-    const tableBodyRow = document.createElement('tr');//létrehozzuk a táblázat tőrzsének sorát
-    tbody.appendChild(tableBodyRow);//hozzáadjuk a tbodyhoz a sort
-    
-    const nameCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a neveket
-    nameCell.textContent = valueObject.name;//a cellát feltöltjük a valueObject "name" tulajdonság értékével
-    tableBodyRow.appendChild(nameCell);//a cellát hozzáadjuk a sorhoz
-
-    const birthCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a születés éveket
-    birthCell.textContent = valueObject.birth;//a cellát feltöltjük a valueObject "birth" tulajdonság értékével
-    tableBodyRow.appendChild(birthCell);//a cellát hozzáadjuk a sorhoz
-
-    const zipCodeCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja az irányítószámokat
-    zipCodeCell.textContent = valueObject.zipcode;//a cellát feltöltjük a valueObject "zipcode" tulajdonság értékével
-    tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
-    }
-})
+const makeInput = (id, type) => {
+    const input = document.createElement('input')//létrehozunk egy input elementett
+    input.id = id;//az input id-ja megkapja a megadott id értékét
+    input.type = type;//az input type-ja megkapja a megadott type értékét
+    return input //visszatérünk a létrehozott inputtal
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-containerDiv.appendChild(tableDiv);//a tablaDiv-et hozzáadjuk a containerDivhez
-containerDiv.appendChild(formDiv);//a formDiv-et hozzáadjuk a containerDivhez
-
+/**
+ * a táblázat és annak fejléce létrehozásáért felelős függvény
+ * @param {HTMLDivElement} container az a div elem amelyhez a táblázatott adom
+ * @param {function(HTMLElement): void} callback a callback függvény amely által eldöntjük hogy mit csinálunk a tbodyban
+ */
+const createTable = (container, callback) =>{
+    const tableDiv = makeDiv('table');//létrehozzuk a table osztályú divet a makeDiv függvényel
+    container.appendChild(tableDiv);//hozzáadjuk a containerhez a táblázat divjét
+    const tableSim = document.createElement('table');//létrehozunk egy táblázatott
+    tableDiv.appendChild(tableSim);//hozzáadjuk a table osztályú divhez a táblázatott
+    const tableHead = document.createElement('thead');//létrehozzuk a fejlécet a táblázattnak
+    tableSim.appendChild(tableHead);//a fejlécet hozzáadjuk táblázathoz
+    const tableHeadRow =  document.createElement('tr');//létrehozzuk a fejléc sorát
+    tableHead.appendChild(tableHeadRow)//a fejléc sorát hozzáadjuk a fejléchez
+    const theadCells = ['név', 'születési dátum', 'irányítószám'];//létrehozzunk egy string típusú tömböt amely tartalmazza 'név', 'születési dátum', 'irányítószám' értéket amely a táblázat fejléce lesz
+    for(const cellContent of theadCells){// a tömbön végigiterálunk cellContent néven
+        const thcell = document.createElement('th');//létrehozzuk a fejlécnek cella elemét
+        thcell.innerText = cellContent;//a cella belső értéket a tömb egyik eleme lesz
+        tableHeadRow.appendChild(thcell);//a cellát hozzáadjuk a fejléc sorához
+    }
+    const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzsét
+    tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
+    callback(tbody);// meghívjuk a callback-et a <tbody> elem átadásával
+}
 //--------------------------------------------------------------------------------------------------------------------------------------
-const fileInput = document.createElement('input')//létrehozunk egy inputot
-containerDiv.appendChild(fileInput);//az inputot belerakjuk a container divbe
-fileInput.id='fileinput'//a file id-ja fileinput
-fileInput.type = 'file';//az input típusa file-ra alakítjuk át
-fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely az figyeli hogy változik-e bármi is a weboldalon
-    const file = e.target.files[0];//bekéri az első fájlt az inputból
-    const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
-    fileReader.onload = () => {//beolvassuk fájlt
-    const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
-    const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
-    for(const line of removedHeadLines){//végig iterálunk a tömbön
-            const trimmedLine = line.trim();//a sorban lévő stringből eltávolítjuk a szóközöket
-            const fields = trimmedLine.split(';');//feldaraboljuk a sort
-            const pers = {//létrehozunk egy objektumot
-                name: fields[0],//a name megkapja a feldarabolt sor 1. elemét
-                birth: fields[1],//a birth megkapja a feldarabolt sor 2. elemét
-                zipcode: fields[2]//a zipcode megkapja a feldarabolt sor 3. elemét
-            }
-            array.push(pers);//felnyomjuk a tömbe az objektumunkat
-            const tableBodyRow = document.createElement('tr');//létrehoztunk egy sort
-            tbody.appendChild(tableBodyRow);//a sort hozzáadjuk a tbodyhoz
+/**
+ * A függvény feladata az hogy a formot létrehozza és müködtese és validálja az inputokat és értékeit a táblázatba helyezze el
+ * @param {HTMLTableSectionElement} tablebody a tbody amelybe belerakom az inputokban megadott értékeket
+ * @param {HTMLDivElement} container a container amelybe bele helyezem a formot
+ * @param {Array} personArray a tömb amelybe felpusholjuk a megadott input értékeke
+ */
+const createForm = (tablebody, container, personArray) => {
+    const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
+    container.appendChild(formDiv);//a containerhez hozzáadom a form divjét
+    const formSim = document.createElement('form');//létrehozzuk a form elementet
+    formDiv.appendChild(formSim)//a formot hozzáadjuk a formDivhez
+
+    const fieldElementList = [//egy lista amely tartalmazza a field ID-ját és a tartalmát
+        {fieldid: 'name',fieldLabel: 'név'},//név cella
+        {fieldid: 'birth',fieldLabel: 'születési év'},//születési év cella
+        {fieldid: 'zipcode',fieldLabel: 'irányítószám'}]//irányítószám cella
+
+    for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláunk a fieldElementList tömbön és benne létrehozzuk a fieldeket annak label-jét, input-ját és tulajdonságait
+        const field = makeDiv('field');//létrehozzuk a field osztályú divet a makeDiv függvénnyel
+        formSim.appendChild(field);//hozzáadjuk a field osztályú divet a formhoz
+        const label = document.createElement('label');//létrehozzuk a field label elementjét
+        label.htmlFor = fieldElement.fieldid;//a labelnek megadunk egy htmlFor tulajdonság ami az elem fieldid-ja lesz
+        label.textContent = fieldElement.fieldLabel;//a labelnek megadunk egy textContent tulajdonság ami az elem fieldLabelje lesz
+        field.appendChild(label)// a labelt hozzáadjuk a field osztályú divhez
+        const input = makeInput(fieldElement.fieldid, 'text')//a makeInput függvényel létrehozok egy inputot
+        field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
+        field.appendChild(input)//az inputot hozzáadjuk a divhez
+        const error = document.createElement('span');//létrehozunk egy span elementet
+        error.className = 'error';//az osztály neve error lesz
+        field.appendChild(error);//hozzáadjuk a spant a fieldhez
+    }
+    const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
+    buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
+    formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
+
+    /**
+     * létrehozunk egy addEventListener függvényt amely a submit esetén fut le
+     * a függvény feladata a inputok adatai behelyezése a cellákba
+     */
+    formSim.addEventListener('submit', (e)=> {
+        e.preventDefault();//megoldja hogy a weboldal betöltésénél ne fusson le a program
+        const valueObject = {}//létrehozunk egy objektumot
+        const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
             
-            const nameCell = document.createElement('td');//létrehozzuk a cellát
-            nameCell.textContent = pers.name;//a cella tartalma megkapja az objektum name property-jét
-            tableBodyRow.appendChild(nameCell);//a cella hozzáadjuk a sorhoz
-        
-            const birthCell = document.createElement('td');//létrehozzuk a cellát
-            birthCell.textContent = pers.birth;//a cella tartalma megkapja az objektum birth property-jét
-            tableBodyRow.appendChild(birthCell);//a cella hozzáadjuk a sorhoz
-        
-            const zipCodeCell = document.createElement('td');//létrehozzuk a cellát
-            zipCodeCell.textContent = pers.zipcode;//a cella tartalma megkapja az objektum zipcode property-jét
-            tableBodyRow.appendChild(zipCodeCell);//a cella hozzáadjuk a sorhoz
+        let valid = true;//létrehozunk egy bool változót amely alapértelmezett értéke true
+        for(const inputField of inputFields){//végig iterálunk az inputokon
+            const error = inputField.parentElement.querySelector('.error');//az inputoknak parent elementjénél kiválasztjuk az error osztályt rendelkező elementet
+            if(!error){//ha nincs semmilyen error akkor belép
+                console.error('nincs errorfield');//létrehozz egy error objektumot és kiiratja "nincs errorfield"
+                return;//visszatérés
+            }
+            error.textContent = '';//lenullázuk az error szövegét
+            if(inputField.value === ''){//ha inputField értéke null akkor belép
+                error.textContent = 'Kotelezo megadni';//kitölti az error tartalmát egy stringel
+                valid = false;//a bool értékét falsera rakja
+            }
+            valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
         }
-    }
-    fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
-})
+        if(valid){//megnézi a valid bool értékét
+        personArray.push(valueObject);//a valueObject-et felnyomjuk a megadott tömbbe
+        addRow(valueObject, tablebody);//létrehozzuk a sorokat a valueObject alapján és eltároljuk a tablebodyba
+        }
+    })
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-const exportButton = document.createElement('button');//létrehozunk egy gombot
-exportButton.textContent = 'Letöltés';//a gomb tartalmát kitöltjük egy string értékkel
-containerDiv.appendChild(exportButton);//a gombot hozzáadjuk a container divhez
-exportButton.addEventListener('click', () => {//addeventlistener amely a click-et figyeli a gombnál
-    const link = document.createElement('a');//létrehozunk egy anchor linket
-    const contentArray = ['name;birth;zipcode']//létrehozunk egy tömböt amely tartalmaz string értékeket
-    for(const pers of array){//végig iterálunk a tömbön amely tárolta a táblázat elemeit
-        contentArray.push(`${pers.name};${pers.birth};${pers.zipcode}`);//a contentarray tömbe felpusholjuk a a táblázat elemeit
+/**
+ * A függvény által feltudjuk tölteni a fájlainkat a weboldalra
+ * @param {HTMLTableSectionElement} tablebody 
+ * @param {HTMLDivElement} container 
+ * @param {array} personArray 
+ */
+const createFileUpload = (tablebody, container, personArray) => {
+    const fileInput = makeInput('fileinput', 'file')//létrehozunk egy inputot a makeInput függvény alapján amely idja a fileInput lesz és típusa pedig file
+    container.appendChild(fileInput);//az inputot belerakjuk a container divbe
+    fileInput.addEventListener('change', (e) => {//az input változását figyeli az addeventlistener
+        const file = e.target.files[0];//bekéri az első fájlt az inputból
+        const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
+        fileReader.onload = () => {//beolvassuk fájlt
+        const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
+        const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
+        for(const line of removedHeadLines){//végig iterálunk a tömbön
+                const trimmedLine = line.trim();//a sorban lévő stringből eltávolítjuk a szóközöket
+                const fields = trimmedLine.split(';');//feldaraboljuk a sort
+                const pers = {//létrehozunk egy objektumot
+                    name: fields[0],//a name megkapja a feldarabolt sor 1. elemét
+                    birth: fields[1],//a birth megkapja a feldarabolt sor 2. elemét
+                    zipcode: fields[2]//a zipcode megkapja a feldarabolt sor 3. elemét
+                }
+                personArray.push(pers);//felnyomjuk a tömbe az objektumunkat
+                addRow(pers, tablebody)//létrehozzuk a sort
+            }   
+        }
+        fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
+        })
     }
-    const content = contentArray.join('\n');//a tömbött sorvégenként kombináljuk egy string-é
-    const file = new Blob([content])//eltároljuk az egységes stringet egy bloba mint nyers bináris adat
-    link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
-    link.download = 'newdata.csv'//letöltjük az új fájlt newdata.csv néven
-    link.click();//linkek meghívjuk a beépített click függvényt
-    URL.revokeObjectURL(link.href);//kiürítjük az URL-t
-})
+/**
+ * Hozzáad egy új sort a táblázat törzséhez a megadott objektum alapján.
+ * @param {{name: string, birth: string, zipcode: string}} object A személy adatait tartalmazó objektum
+ * @param {HTMLTableSectionElement} tablebody Az a tbody> elem, ahova a sort hozzáadjuk
+ */
+const addRow = (object, tablebody) => {
+    const tableBodyRow = document.createElement('tr');//létrehozzuk a sort
+    tablebody.appendChild(tableBodyRow);//hozzáadjuk a megadott tbodyhoz
+    const nameCell = document.createElement('td');//létrehozzuk a cellát amely a nevet tartalmazza
+    nameCell.textContent = object.name;//a cella tartalmát feltöltjük az objektum name-vel
+    tableBodyRow.appendChild(nameCell);//hozzáadjuk a sorhoz a cellát
+    const birthCell = document.createElement('td');//létrehozzuk a cellát amely a születés évet tartalmazza
+    birthCell.textContent = object.birth;//a cella tartalmát feltöltjük az objektum birth-vel
+    tableBodyRow.appendChild(birthCell);//hozzáadjuk a sorhoz a cellát
+    const zipCodeCell = document.createElement('td');//létrehozzuk a cellát amely a irányítószámot tartalmazza
+    zipCodeCell.textContent = object.zipcode;//a cella tartalmát feltöltjük az objektum zipcode-val
+    tableBodyRow.appendChild(zipCodeCell);//hozzáadjuk a sorhoz a cellát
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * A letöltésért felelős függvény
+ * @param {HTMLDivElement} container a container div element amelybe a gombot belerakjuk
+ * @param {Array} personArray a tömb amelyen végigiterálunk és elmentjük értékeit
+ */
+const createFileDownload = (container, personArray) => {
+    const exportButton = document.createElement('button');//létrehozunk egy gombot
+    exportButton.textContent = 'Letöltés';//a gomb tartalmát kitöltjük egy string értékkel
+    container.appendChild(exportButton);//a gombot hozzáadjuk a containerhez
+    exportButton.addEventListener('click', () => {//addeventlistener amely a click-et figyeli a gombnál
+        const link = document.createElement('a');//létrehozunk egy anchor linket
+        const contentArray = ['name;birth;zipcode']//létrehozunk egy tömböt amely tartalmaz string értékeket
+        for(const pers of personArray){//végig iterálunk a tömbön amely tárolta a táblázat elemeit
+            contentArray.push(`${pers.name};${pers.birth};${pers.zipcode}`);//a contentarray tömbe felpusholjuk a a táblázat elemeit
+        }
+        const content = contentArray.join('\n');//a tömbött sorvégenként kombináljuk egy string-é
+        const file = new Blob([content])//eltároljuk az egységes stringet egy bloba mint nyers bináris adat
+        link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+        link.download = 'newdata.csv'//letöltjük az új fájlt newdata.csv néven
+        link.click();//linkek meghívjuk a beépített click függvényt
+        URL.revokeObjectURL(link.href);//kiürítjük az URL-t
+    })
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -182,65 +211,69 @@ const filter = (personArray, callback) => {
     return result;//visszatérünk a resultal
 }
 
-const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével
-containerDiv.appendChild(filterFormDiv);//a divet hozzáadom a container divhez
-
-const formForFilter = document.createElement('form');//létrehozunk egy formot
-filterFormDiv.appendChild(formForFilter);//a formot hozzáadjuk a filter divhez
-const select = document.createElement('select');//létrehozunk egy selectet
-formForFilter.appendChild(select);//a létrehozott selectet hozzadjuk a formhoz
-const options = //létrehozzuk egy tömböt amely tartalmazza a szűrés opciókat
-[{value: '',innerText: ''},//alap érték || semmi által szürünk
-{value: 'birth',innerText: 'születési dátum'},//évszám szerint szűrünk
-{value: 'zipcode',innerText: 'irányítószám'}]//az irányítószám szerint szűrűnk
-for(const option of options){//végig megyünk a tömbön mely tartalmazza az opciókat
-    const optionElement = document.createElement('option');//létrehozunk egy option elementet
-    optionElement.value = option.value;//az option element értéke megkapja az elem értékét
-    optionElement.innerText = option.innerText//a opion element tartalmát feltöltjük az elem text értékével
-    select.appendChild(optionElement);//a selecthez hozzá appendeljük az optionElementet
-}
-
-const input =  document.createElement('input');//létrehozunk egy inputot
-input.id='filterInput';//annak id-ja lesz a filterInput
-formForFilter.appendChild(input);//és hozzáadjuk a formhoz
-
-const button = document.createElement('button');//létrehozunk egy gombot
-button.innerText = 'Szures';//tartalmát feltöltjük egy string értékkel
-formForFilter.appendChild(button);//a gombot hozzáadjuk a formhoz
-formForFilter.addEventListener('submit', (e) => {//létrehozunk a form egy addEventListener-t amely a submit eseményt figyeli
-    e.preventDefault();//ezáltal nem fut le az esemény önmagától a weboldal betöltésénél
-    const filterInput = e.target.querySelector('#filterInput');//kiválasztjuk az összes inputot amely tartalmazza a #filterInput osztályt
-    const select = e.target.querySelector('select');//kiválasztjuk a formon belüli select osztályú elementeket
-
-    const filteredArray = filter(array, (element) => {//létrehozunk egy új tömböt amely az arrayt szűri az element paraméter alapjánt
-        if(select.value == 'birth'){//ha a select értéke megegyezik a birth-el akkor azzal szűr
-            if(filterInput.value === element.birth){//megnézi a filterinput értékét hogy egyenlő-e az element birth tulajdonsággal
-                return true;//azon esetben ha igen akkor visszatérünk trueval
-            }
-        }else if(select.value == 'zipcode'){//létrehozunk egy else if-et amely ha a select értéke zipcode akkor irányítószám szerint szűr
-            if(filterInput.value === element.zipcode){//ha az input értéke megegyezik az element zipcode tulajdonságával akkor lefut
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * ez a függvény felelős a szűrés elvégzéséhez
+ * létrehoz egy selectet, inputot, gombot
+ * amelyek által a kiszűrjük és eltároljuk egy külön tömbbe a szűrt adatot
+ * és aztán ki is irattjuk
+ * @param {HTMLDivElement} container a container div element amely tartalmazni fogly a select-et, input-ot, gomb-ot
+ * @param {HTMLTableSectionElement} tablebody a tablebody amelybe a kiiratásnál dolgozunk
+ * @param {Array} personArray az a tömb amelyt kiszűrünk
+ */
+const createFilterForm = (container, tablebody, personArray ) => {
+    const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével
+    container.appendChild(filterFormDiv);//a divet hozzáadom a containerhez
+    const formForFilter = document.createElement('form');//létrehozunk egy formot
+    filterFormDiv.appendChild(formForFilter);//a formot hozzáadjuk a filter divhez
+    const select = document.createElement('select');//létrehozunk egy selectet
+    formForFilter.appendChild(select);//a létrehozott selectet hozzadjuk a formhoz
+    const options = //létrehozzuk egy tömböt amely tartalmazza a szűrés opciókat
+    [{value: '',innerText: ''},//alap érték || semmi által szürünk
+    {value: 'birth',innerText: 'születési dátum'},//évszám szerint szűrünk
+    {value: 'zipcode',innerText: 'irányítószám'}]//az irányítószám szerint szűrűnk
+    for(const option of options){//végig megyünk a tömbön mely tartalmazza az opciókat
+        const optionElement = document.createElement('option');//létrehozunk egy option elementet
+        optionElement.value = option.value;//az option element értéke megkapja az elem értékét
+        optionElement.innerText = option.innerText//a opion element tartalmát feltöltjük az elem text értékével
+        select.appendChild(optionElement);//a selecthez hozzá appendeljük az optionElementet
+    }
+    const input =  makeInput('filterInput', 'text');//létrehozunk egy inputot a makeInput függvény segítségével az input idja filterInput és típusa text
+    formForFilter.appendChild(input);//és hozzáadjuk a formhoz
+    const button = document.createElement('button');//létrehozunk egy gombot
+    button.innerText = 'Szures';//tartalmát feltöltjük egy string értékkel
+    formForFilter.appendChild(button);//a gombot hozzáadjuk a formhoz
+    formForFilter.addEventListener('submit', (e) => {//létrehozunk a form egy addEventListener-t amely a submit eseményt figyeli
+        e.preventDefault();//ezáltal nem fut le az esemény önmagától a weboldal betöltésénél
+        const filterInput = e.target.querySelector('#filterInput');//kiválasztjuk az összes inputot amely tartalmazza a #filterInput osztályt
+        const select = e.target.querySelector('select');//kiválasztjuk a formon belüli select osztályú elementeket
+        const filteredArray = filter(personArray, (element) => {//létrehozunk egy új tömböt amely a megadott tömböt szűri az element paraméter alapjánt
+            if(select.value == 'birth'){//ha a select értéke megegyezik a birth-el akkor azzal szűr
+                if(filterInput.value === element.birth){//megnézi a filterinput értékét hogy egyenlő-e az element birth tulajdonsággal
+                    return true;//azon esetben ha igen akkor visszatérünk trueval
+                }
+            }else if(select.value == 'zipcode'){//létrehozunk egy else if-et amely ha a select értéke zipcode akkor irányítószám szerint szűr
+                if(filterInput.value === element.zipcode){//ha az input értéke megegyezik az element zipcode tulajdonságával akkor lefut
+                    return true;//visszatér a true-val
+                }
+            }else{//ha ez mind nem igaz akkor csak ki iratja
                 return true;//visszatér a true-val
             }
-        }else{//ha ez mind nem igaz akkor csak ki iratja
-            return true;//visszatér a true-val
+        })
+
+        tablebody.innerHTML = '';//nullázuk a tbody tartalmát
+        for(const filteredElement of filteredArray){//végigjárunk a szűrő tömbön
+            addRow(filteredElement, tablebody)//létrehozzuk a sorokat elemenként a megadott tablebodyba
         }
     })
+}
 
-    tbody.innerHTML = '';//nullázuk a tbody tartalmát
-    for(const filteredElement of filteredArray){//végigjárunk a szűrő tömbön
-        const tableBodyRow = document.createElement('tr');//létrehozunk egy sort
-            tbody.appendChild(tableBodyRow);//a sort hozzáadjuk a tbodyhoz
-            
-            const nameCell = document.createElement('td');//létrehozzuk a cellát amely a nevet tartalmazza
-            nameCell.textContent = filteredElement.name;//a cella megkapja az elem név értékét
-            tableBodyRow.appendChild(nameCell);//a cellát a sorhoz hozzáadjuk
-        
-            const birthCell = document.createElement('td');//létrehozzuk a cellát amely a születésévet tartalmazza
-            birthCell.textContent = filteredElement.birth;//a cella megkapja az elem születés év értékét
-            tableBodyRow.appendChild(birthCell);//a cellát a sorhoz hozzáadjuk
-        
-            const zipCodeCell = document.createElement('td');//létrehozzuk a cellát amely a irányítószámot tartalmazza
-            zipCodeCell.textContent = filteredElement.zipcode;//a cella megkapja az elem irányítószám értékét
-            tableBodyRow.appendChild(zipCodeCell);//a cellát a sorhoz hozzáadjuk
-    }
+//--------------------------------------------------------------------------------------------------------------------------------------
+const containerDiv = makeDiv('container');//létrehozzuk a container osztályú divet a makeDiv függvényel
+document.body.appendChild(containerDiv);//a létrehozott containert hozzáadjuk a testhez
+createTable(containerDiv, (bodyOfTable) => {//meghívjuk mint callback függvényt
+    createForm(bodyOfTable, containerDiv, array);//meghívjuk a createForm függvényt a bodyofTable, containerDiv, array paraméterek alaján
+    createFileUpload(bodyOfTable, containerDiv, array);//meghívjuk a createFileUpload függvényt a bodyofTable, containerDiv, array paraméterek alaján
+    createFileDownload(containerDiv, array);//meghívjuk a createFilterForm függvényt a containerDiv, array paraméterek alaján
+    createFilterForm(containerDiv, bodyOfTable, array)//meghívjuk a createFilterForm függvényt a bodyofTable, containerDiv, array paraméterek alaján
 })
