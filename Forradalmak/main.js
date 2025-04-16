@@ -13,7 +13,6 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-
 const containerDiv = makeDiv('container');//létrehozzuk a container osztályú divet a makeDiv függvényel
 document.body.appendChild(containerDiv);//a létrehozott containert hozzáadjuk a testhez
 const tableDiv = makeDiv('table');//létrehozzuk a table osztályú divet a makeDiv függvényel
@@ -33,7 +32,6 @@ const tbody = document.createElement('tbody');//létrehozzuk a táblázat tőrzs
 tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-
 const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
 
 const formSim = document.createElement('form');//létrehozzuk a form elementet
@@ -106,8 +104,46 @@ formSim.addEventListener('submit', (e)=> {
     tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
     }
 })
+
 //--------------------------------------------------------------------------------------------------------------------------------------
-
-
 containerDiv.appendChild(tableDiv);//a tablaDiv-et hozzáadjuk a containerDivhez
 containerDiv.appendChild(formDiv);//a formDiv-et hozzáadjuk a containerDivhez
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+const fileInput = document.createElement('input')//létrehozunk egy inputot
+containerDiv.appendChild(fileInput);//az inputot belerakjuk a container divbe
+fileInput.id='fileinput'//a file id-ja fileinput
+fileInput.type = 'file';//az input típusa file-ra alakítjuk át
+fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely az figyeli hogy változik-e bármi is a weboldalon
+    const file = e.target.files[0];//bekéri az első fájlt az inputból
+    const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
+    fileReader.onload = () => {//beolvassuk fájlt
+       const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
+       const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
+       for(const line of removedHeadLines){//végig iterálunk a tömbön
+            const trimmedLine = line.trim();//a sorban lévő stringből eltávolítjuk a szóközöket
+            const fields = trimmedLine.split(';');//feldaraboljuk a sort
+            const pers = {//létrehozunk egy objektumot
+                name: fields[0],//a name megkapja a feldarabolt sor 1. elemét
+                birth: fields[1],//a birth megkapja a feldarabolt sor 2. elemét
+                zipcode: fields[2]//a zipcode megkapja a feldarabolt sor 3. elemét
+            }
+            array.push(pers);//felnyomjuk a tömbe az objektumunkat
+            const tableBodyRow = document.createElement('tr');//létrehoztunk egy sort
+            tbody.appendChild(tableBodyRow);//a sort hozzáadjuk a tbodyhoz
+            
+            const nameCell = document.createElement('td');//létrehozzuk a cellát
+            nameCell.textContent = pers.name;//a cella tartalma megkapja az objektum name property-jét
+            tableBodyRow.appendChild(nameCell);//a cella hozzáadjuk a sorhoz
+        
+            const birthCell = document.createElement('td');//létrehozzuk a cellát
+            birthCell.textContent = pers.birth;//a cella tartalma megkapja az objektum birth property-jét
+            tableBodyRow.appendChild(birthCell);//a cella hozzáadjuk a sorhoz
+        
+            const zipCodeCell = document.createElement('td');//létrehozzuk a cellát
+            zipCodeCell.textContent = pers.zipcode;//a cella tartalma megkapja az objektum zipcode property-jét
+            tableBodyRow.appendChild(zipCodeCell);//a cella hozzáadjuk a sorhoz
+       }
+    }
+    fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
+})
