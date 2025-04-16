@@ -46,6 +46,7 @@ class Area{
     }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------
 /**
  * ezzel a extension osztályjal érjük el a táblázat fejléc létrehozását
  * a Table ősosztálya az Area osztály
@@ -102,6 +103,7 @@ class Table extends Area {
     }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------
 /**
  * ezzel a extension osztályjal érjük el a form létrehozását
  * a Form ősosztálya az Area osztály
@@ -152,6 +154,7 @@ class Form extends Area {
     }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------
 /**
  * Az osztály felelős a formon belüli input, labelek, spanek létrehozásáért egyben a fieldDiv létrehozásáért
  */
@@ -207,5 +210,40 @@ class FormField {
             div.appendChild(element); //hozzáaddjuk a divhez az elemet
         }
         return div;//visszatérünk a divvel
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * az area leszarmazott osztálya
+ * az osztály feladata a fájlok feltöltése a weboldalra
+ */
+class Upload extends Area{
+    /**
+     * a konstruktor létrehoz egy gombot amely text filet
+     * olvass be és a fájlt táblázatba helyezi
+     * @param {string} cssClass a div osztalya
+     * @param {objekt} manager ez foglalkozik a személyel
+     */
+    constructor(cssClass, manager){
+        super(cssClass, manager);//meghívjuk az area konstruktorát
+        const input = document.createElement('input')//létrehozunk egy input elementet
+        input.id ='fileinput';//az input id-ja fileInput lesz
+        input.type ='file'//input típusa pedig file
+        this.div.appendChild(input);//hozzáadjuk a divhez
+        input.addEventListener('change', (e)=>{//egy addeventlistener amely nézi a htmlElement változásait
+            const file = e.target.files[0];//kiválasztjuk a fájlt
+            const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
+            fileReader.onload = () => {//beolvassuk a fájlt
+               const fileLines = fileReader.result.split('\n')//feldaraboljuk a fájlt sorvégek szerint
+               const removedHeadLines = fileLines.slice(1);//kiszedjük a tömböt egy külön tömbbe amely nem tartalmazza a fejlécet
+               for(const line of removedHeadLines){//végig járunk a tömbön (sorok)
+                    const trimmedLine = line.trim();//kiszedjük a szóközöket szavak elején és végén
+                    const fields = trimmedLine.split(';');//szét szedjük a sort
+                    const person = new Person(fields[0], Number(fields[1]), Number(fields[2]))//létrehozunk egy új személyt amelynek 2. és 3. eleme Number típusú lesz
+                    this.manager.addPerson(person)//az új személyt hozzáadjuk a managerhez
+               }
+            }
+            fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
+        })
     }
 }
