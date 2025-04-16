@@ -117,9 +117,9 @@ fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely a
     const file = e.target.files[0];//bekéri az első fájlt az inputból
     const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
     fileReader.onload = () => {//beolvassuk fájlt
-       const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
-       const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
-       for(const line of removedHeadLines){//végig iterálunk a tömbön
+    const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
+    const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
+    for(const line of removedHeadLines){//végig iterálunk a tömbön
             const trimmedLine = line.trim();//a sorban lévő stringből eltávolítjuk a szóközöket
             const fields = trimmedLine.split(';');//feldaraboljuk a sort
             const pers = {//létrehozunk egy objektumot
@@ -142,7 +142,7 @@ fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely a
             const zipCodeCell = document.createElement('td');//létrehozzuk a cellát
             zipCodeCell.textContent = pers.zipcode;//a cella tartalma megkapja az objektum zipcode property-jét
             tableBodyRow.appendChild(zipCodeCell);//a cella hozzáadjuk a sorhoz
-       }
+        }
     }
     fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
 })
@@ -163,4 +163,84 @@ exportButton.addEventListener('click', () => {//addeventlistener amely a click-e
     link.download = 'newdata.csv'//letöltjük az új fájlt newdata.csv néven
     link.click();//linkek meghívjuk a beépített click függvényt
     URL.revokeObjectURL(link.href);//kiürítjük az URL-t
+})
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * A függvény azért felel hogy a megadott tömböl kiszürjük az adatokat a callback segítségével
+ * @param {Array} personArray ebből a függvényből szürünk
+ * @param {function(*): boolean} callback a szűrési feltételt meghatározó függvény
+ * @returns {Array} a szürt tömb
+ */
+const filter = (personArray, callback) => {
+    const result = [];//létrehozunk egy üres tömböt
+    for(const element of personArray){//a paraméterben megadott tömbön végigiterálunk
+        if(callback(element)){//megnézi a callback függvényel hogy ez a elem berakhatő a szűrt tömbbe
+            result.push(element);//a szűrt tömbbe felpusholjuk az elementet
+        }
+    }
+    return result;//visszatérünk a resultal
+}
+
+const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével
+containerDiv.appendChild(filterFormDiv);//a divet hozzáadom a container divhez
+
+const formForFilter = document.createElement('form');//létrehozunk egy formot
+filterFormDiv.appendChild(formForFilter);//a formot hozzáadjuk a filter divhez
+const select = document.createElement('select');//létrehozunk egy selectet
+formForFilter.appendChild(select);//a létrehozott selectet hozzadjuk a formhoz
+const options = //létrehozzuk egy tömböt amely tartalmazza a szűrés opciókat
+[{value: '',innerText: ''},//alap érték || semmi által szürünk
+{value: 'birth',innerText: 'születési dátum'},//évszám szerint szűrünk
+{value: 'zipcode',innerText: 'irányítószám'}]//az irányítószám szerint szűrűnk
+for(const option of options){//végig megyünk a tömbön mely tartalmazza az opciókat
+    const optionElement = document.createElement('option');//létrehozunk egy option elementet
+    optionElement.value = option.value;//az option element értéke megkapja az elem értékét
+    optionElement.innerText = option.innerText//a opion element tartalmát feltöltjük az elem text értékével
+    select.appendChild(optionElement);//a selecthez hozzá appendeljük az optionElementet
+}
+
+const input =  document.createElement('input');//létrehozunk egy inputot
+input.id='filterInput';//annak id-ja lesz a filterInput
+formForFilter.appendChild(input);//és hozzáadjuk a formhoz
+
+const button = document.createElement('button');//létrehozunk egy gombot
+button.innerText = 'Szures';//tartalmát feltöltjük egy string értékkel
+formForFilter.appendChild(button);//a gombot hozzáadjuk a formhoz
+formForFilter.addEventListener('submit', (e) => {//létrehozunk a form egy addEventListener-t amely a submit eseményt figyeli
+    e.preventDefault();//ezáltal nem fut le az esemény önmagától a weboldal betöltésénél
+    const filterInput = e.target.querySelector('#filterInput');//kiválasztjuk az összes inputot amely tartalmazza a #filterInput osztályt
+    const select = e.target.querySelector('select');//kiválasztjuk a formon belüli select osztályú elementeket
+
+    const filteredArray = filter(array, (element) => {//létrehozunk egy új tömböt amely az arrayt szűri az element paraméter alapjánt
+        if(select.value == 'birth'){//ha a select értéke megegyezik a birth-el akkor azzal szűr
+            if(filterInput.value === element.birth){//megnézi a filterinput értékét hogy egyenlő-e az element birth tulajdonsággal
+                return true;//azon esetben ha igen akkor visszatérünk trueval
+            }
+        }else if(select.value == 'zipcode'){//létrehozunk egy else if-et amely ha a select értéke zipcode akkor irányítószám szerint szűr
+            if(filterInput.value === element.zipcode){//ha az input értéke megegyezik az element zipcode tulajdonságával akkor lefut
+                return true;//visszatér a true-val
+            }
+        }else{//ha ez mind nem igaz akkor csak ki iratja
+            return true;//visszatér a true-val
+        }
+    })
+
+    tbody.innerHTML = '';//nullázuk a tbody tartalmát
+    for(const filteredElement of filteredArray){//végigjárunk a szűrő tömbön
+        const tableBodyRow = document.createElement('tr');//létrehozunk egy sort
+            tbody.appendChild(tableBodyRow);//a sort hozzáadjuk a tbodyhoz
+            
+            const nameCell = document.createElement('td');//létrehozzuk a cellát amely a nevet tartalmazza
+            nameCell.textContent = filteredElement.name;//a cella megkapja az elem név értékét
+            tableBodyRow.appendChild(nameCell);//a cellát a sorhoz hozzáadjuk
+        
+            const birthCell = document.createElement('td');//létrehozzuk a cellát amely a születésévet tartalmazza
+            birthCell.textContent = filteredElement.birth;//a cella megkapja az elem születés év értékét
+            tableBodyRow.appendChild(birthCell);//a cellát a sorhoz hozzáadjuk
+        
+            const zipCodeCell = document.createElement('td');//létrehozzuk a cellát amely a irányítószámot tartalmazza
+            zipCodeCell.textContent = filteredElement.zipcode;//a cella megkapja az elem irányítószám értékét
+            tableBodyRow.appendChild(zipCodeCell);//a cellát a sorhoz hozzáadjuk
+    }
 })
