@@ -5,5 +5,6 @@ const fieldList = [//egy lista amely tartalmazza a field ID-ját és a tartalmá
     {fieldid: 'birth',fieldLabel: 'születési év'},//születési év cella
     {fieldid: 'zipcode',fieldLabel: 'irányítószám'}];//irányítószám cella
 
-const table = new Table('table');//meghívjuk az osztály konstruktorát és megadjuk a table mint paramétert
-const form = new Form('form', fieldList);//meghivjuk az osztályt és megadjuk a form string paramétert és fieldList Array tipusú paramétert
+const manager = new Manager()//inicializáljuk a manager osztályt
+const table = new Table('table', manager);//meghívjuk az osztály konstruktorát és megadjuk a table mint paramétert
+const form = new Form('form', fieldList,manager );//meghivjuk az osztályt és megadjuk a form string paramétert és fieldList Array tipusú paramétert
