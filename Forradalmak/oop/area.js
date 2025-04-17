@@ -163,7 +163,7 @@ class UploadDownload extends Area{
      * a konstruktor létrehoz egy gombot amely text filet
      * olvass be és a fájlt táblázatba helyezi
      * @param {string} cssClass a div osztalya
-     * @param {objekt} manager ez foglalkozik a személyel
+     * @param {obj} manager ez foglalkozik a személyel
      */
     constructor(cssClass, manager){
         super(cssClass, manager);//meghívjuk az area konstruktorát
@@ -175,14 +175,14 @@ class UploadDownload extends Area{
             const file = e.target.files[0];//kiválasztjuk a fájlt
             const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
             fileReader.onload = () => {//beolvassuk a fájlt
-               const fileLines = fileReader.result.split('\n')//feldaraboljuk a fájlt sorvégek szerint
-               const removedHeadLines = fileLines.slice(1);//kiszedjük a tömböt egy külön tömbbe amely nem tartalmazza a fejlécet
-               for(const line of removedHeadLines){//végig járunk a tömbön (sorok)
+                const fileLines = fileReader.result.split('\n')//feldaraboljuk a fájlt sorvégek szerint
+                const removedHeadLines = fileLines.slice(1);//kiszedjük a tömböt egy külön tömbbe amely nem tartalmazza a fejlécet
+                for(const line of removedHeadLines){//végig járunk a tömbön (sorok)
                     const trimmedLine = line.trim();//kiszedjük a szóközöket szavak elején és végén
                     const fields = trimmedLine.split(';');//szét szedjük a sort
                     const person = new Person(fields[0], Number(fields[1]), Number(fields[2]))//létrehozunk egy új személyt amelynek 2. és 3. eleme Number típusú lesz
                     this.manager.addPerson(person)//az új személyt hozzáadjuk a managerhez
-               }
+                }
             }
             fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
         })
