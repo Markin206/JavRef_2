@@ -132,13 +132,20 @@ class Form extends Area {
         form.appendChild(button)//a gombot hozzáadjuk a formhoz
         form.addEventListener('submit', (e)=> {//létrehozzunk egy addeventlistenert amely a formon belül figyel a submit eseményre
             e.preventDefault();//a weboldal betültése esetén az esemény nem fut le alapból
-            const inputFieldList = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyen az esemény történik
             const valueObject = {};//létrehozunk egy üres objektumot
-            for(const inputField of inputFieldList){//az input értékein végig iterálunk
-                valueObject[inputField.id] = inputField.value;//az objektum indexelt eleme megkapja az input tartalmát
+            let valid = true;//létrehozunk egy booleant változó amely alapértéke true lesz || ezze a változóval fogjuk elérni hogy sikertelen validáció esetén ne lehessen semmit sem adni a táblázathoz
+            for(const formField of this.#formFieldArray){//az input értékein végig iterálunk
+                formField.error = '';//kiürítjük a formfield error(span) tartalmát
+                if(formField.value === ''){//ha az formfield input értéke null vagy undefined akkor hibát ír ki és a valid változó értékét false-ra változtatja
+                    formField.error = 'Kotelezo megadni';//a hiba üzenet amelyt a span elementek kiiratnak
+                    valid = false;//a valid értéke átváltozik falsera
+                }
+                valueObject[formField.id] = formField.value;//az objektum indexelt eleme megkapja az input tartalmát
             }
+            if(valid){//ha a validáció sikeres akkor létrehozz egy új személyt(Work osztályú) és hozzáadja a managerben található tömbhöz
             const person = new Work(valueObject.name, valueObject.mufaj, valueObject.cim);//létrehozunk egy új személyt(Work osztály) amely megkapja az inputok tartalmát az objektumon keresztül
             this.manager.addPerson(person);//a manager addPerson függvényét meghívjuk amely által hozzáadjuk a managerben található tömbhöz és hozzáadjuk a táblázathoz
+            }
         })
     }
 }
