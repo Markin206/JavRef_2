@@ -9,16 +9,24 @@ class Area{
 
     #div;//a privát változó amely a divek tárolásával fog foglalkozni
 
+    #manager//a privát változó amelyben eltároljuk a manager objektumot
+
     get div(){//a div getter függvénye (eltárolja a divvet)
         return this.#div;//visszatér a divvel
+    }
+
+    get manager(){//a manager getter fügvénye (eltárolja a manager objektumot)
+        return this.#manager;//visszatér a privát változóval
     }
 
     /**
       * A konstruktor feladata a div elkészítése és osztálya beállítása paraméter szerint a privátmetódus által létrejött containerben
       * @param {string} className //a string paraméter amely a osztály nevet tartalmazza
+      * @param {object} manager A manager objektum, a személyek kezelésést szolgálja
       */
-    constructor(className){//konstruktor és string típusú className paramétere
-        const container = this.#getContainerDiv();
+    constructor(className, manager){//konstruktor és string típusú className paramétere
+        this.#manager = manager;// Inicializálja a manager-t
+        const container = this.#getContainerDiv();//meghívjuk a containerDiv privát metódust hogy megnézzük hogy létezik a div vagy sem és ha nem akkor létrehozzon egyet
         this.#div = document.createElement('div');//létrehozzuk a divet és hozzá rendeljük a privát változóhoz
         this.#div.className = className;//a div privát változó className tulajdonságához hozzá rendeljük a className paramétert
         container.appendChild(this.#div);//a div privát változót hozzáadjuk a containerDiv-hez
@@ -56,9 +64,23 @@ class Area{
  * Az osztályban a table divje és táblázat létrehozása történik meg
  */
 class Table extends Area {
-    constructor(cssClass){//a table konstruktora ahol létrehozzuk a táblázatott
-        super(cssClass);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
+    /**
+     * //a table konstruktora ahol létrehozzuk a táblázatott és tőrzsét feltöltjük
+     * a manager által
+     * @param {string} cssClass ezzel a paraméterrel hozzuk létre a divet az area osztály konstruktorával
+     * @param {object} manager a manager objektum amely a callback elérhetőségét okoza
+     */
+    constructor(cssClass, manager){
+        super(cssClass, manager);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
         const tbody = this.#createTable();//meghívjuk a privát függvényt és hozzáadjuk a tbody változóhoz
+        this.manager.setAddWorkCallback((pers) => {//meghívjuk a managerben lévő callback függvényt a pers paraméterrel amely meghívás esetén az új személy hozzáadásra kerül
+            const tableBodyRow = document.createElement('tr');//létrehozunk a táblázat tőrzsének sorát
+            
+            this.createCell('td',pers.name, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző nevét tartalmazza
+            this.createCell('td', pers.mufaj, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének műfaját tartalmazza
+            this.createCell('td',pers.cim,tableBodyRow)//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének címét tartalmazza
+            tbody.appendChild(tableBodyRow);//a sort hozzárendeljük a táblázat tőrzséhez
+        })
     }
     /**
      * egy privát metódus amely a táblázat létrehozásáért felelős
@@ -92,9 +114,10 @@ class Form extends Area {
      * //A form konstruktora ahol létrehozzuk a formot és annak fieldjeit
      * @param {string} cssClass az osztály amely a div osztálya lesz
      * @param {Array} fieldElementList a tömb amely tartalmazza a field tulajdonságait
+     * @param {object} manager a manager amely által elérjük a managerben lévő tömböt amelyhez hozzáadjuk az új személyeket
      */
-    constructor(cssClass, fieldElementList){
-        super(cssClass);//meghívjuk az Area konstruktorát hogy létrehozzuk a Form div elementét
+    constructor(cssClass, fieldElementList, manager){
+        super(cssClass, manager);//meghívjuk az Area konstruktorát hogy létrehozzuk a Form div elementét
         const form = document.createElement('form');//létrehozzunk egy formot
         this.div.appendChild(form);//az újonnan létrehozott divhez hozzáadjuk a formot
         for(const fieldElement of fieldElementList){//végig iterálunk a tömb egyes objektumain
@@ -113,5 +136,15 @@ class Form extends Area {
         const button = document.createElement('button');//létrehozunk egy gomb elementet
         button.textContent = 'hozzáadás';//a tartalmát feltöltjük a hozzáadás string értékkel
         form.appendChild(button)//a gombot hozzáadjuk a formhoz
+        form.addEventListener('submit', (e)=> {//létrehozzunk egy addeventlistenert amely a formon belül figyel a submit eseményre
+            e.preventDefault();//a weboldal betültése esetén az esemény nem fut le alapból
+            const inputFieldList = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyen az esemény történik
+            const valueObject = {};//létrehozunk egy üres objektumot
+            for(const inputField of inputFieldList){//az input értékein végig iterálunk
+                valueObject[inputField.id] = inputField.value;//az objektum indexelt eleme megkapja az input tartalmát
+            }
+            const person = new Work(valueObject.name, valueObject.mufaj, valueObject.cim);//létrehozunk egy új személyt(Work osztály) amely megkapja az inputok tartalmát az objektumon keresztül
+            this.manager.addPerson(person);//a manager addPerson függvényét meghívjuk amely által hozzáadjuk a managerben található tömbhöz és hozzáadjuk a táblázathoz
+        })
     }
 }

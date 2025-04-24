@@ -12,5 +12,6 @@ const fieldArrayList = [{//létrehozunk egy tömböt amely tartalmaz 2 tulajdons
     fieldid: 'cim',//a fieldid tulajdonság megkapja a cim string értéket
     fieldLabel: 'cím'// a field label tulajdonság megkapja a cím string értéket
 }]
-const table = new Table('table');//meghívjuk a Table osztályt és konstruktorával létrehozzuk a table osztályú div-et és létrehozzuk a táblázatott vele
-const form = new Form('form',fieldArrayList);//meghívjuk a Form osztályt és konstruktorával létrehozzuk a form osztályú div-et és a bele tartozó formot is a megadott tömb által
+const manager = new Manager()//inicializáljuk a manager osztályt
+const table = new Table('table', manager);//meghívjuk a Table osztályt és konstruktorával létrehozzuk a table osztályú div-et és létrehozzuk a táblázatott vele
+const form = new Form('form',fieldArrayList, manager);//meghívjuk a Form osztályt és konstruktorával létrehozzuk a form osztályú div-et és a bele tartozó formot is a megadott tömb által
