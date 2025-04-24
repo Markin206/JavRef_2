@@ -1,4 +1,5 @@
-//------------------------------------------------------------------------------------------------------------------------------------------------------------- Különböző függvények
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- Különböző függvények és egyéb tartozékok a függvényekhez
+const array = [];//egy üres tömb amely késöbb tárolni fog táblázatok adatait
 
 /**
  * létrehoztunk egy függvényt amely egy className string paramétert megkapja,
@@ -14,7 +15,6 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------- TABLE
-
 const containerDiv = makeDiv('container');//a containerDiv változóban létrehozzuk a containert a makeDiv függvénnyel
 document.body.appendChild(containerDiv);//a containerDiv változót hozzáadjuk a body-hoz
 const tableDiv = makeDiv('table');//a tableDiv változóban létrehozzuk a table-t a makeDiv függvénnyel
@@ -36,8 +36,6 @@ tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
 containerDiv.appendChild(tableDiv);//a tableDiv változó amely tartalmazza a table osztályú div-et hozzá adjuk a containerDiv-hez
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------- FORM
-
-
 const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
 
 const formSim = document.createElement('form');//létrehozzuk a form elementet
@@ -71,5 +69,33 @@ for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláun
 const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
 buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
 formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
+
+
+/**
+ * létrehozunk egy addeventlistener függvényt amely a formon belül figyeli a submit eseményt
+ */
+formSim.addEventListener('submit', (e)=> {
+    e.preventDefault();//megoldja hogy a weboldal betöltésénél ne történjen meg az esemény
+    const valueObject = {}//létrehozunk egy objektumot
+    const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
+    for(const inputField of inputFields){//végig iterálunk az inputFields-en
+        valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
+    }
+    array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
+    const tableBodyRow = document.createElement('tr');//létrehozzuk a táblázat tőrzsének sorát
+    tbody.appendChild(tableBodyRow);//hozzáadjuk a tbodyhoz a sort
+    
+    const nameCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a neveket
+    nameCell.textContent = valueObject.name;//a cellát feltöltjük a valueObject "name" tulajdonság értékével
+    tableBodyRow.appendChild(nameCell);//a cellát hozzáadjuk a sorhoz
+
+    const birthCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja a születés éveket
+    birthCell.textContent = valueObject.mufaj;//a cellát feltöltjük a valueObject "birth" tulajdonság értékével
+    tableBodyRow.appendChild(birthCell);//a cellát hozzáadjuk a sorhoz
+
+    const zipCodeCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja az irányítószámokat
+    zipCodeCell.textContent = valueObject.cim;//a cellát feltöltjük a valueObject "zipcode" tulajdonság értékével
+    tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
+})
 
 containerDiv.appendChild(formDiv);//a formDiv változó amely tartalmazza a div osztályú div-et hozzá adjuk a containerDiv-hez
