@@ -35,7 +35,7 @@ tableSim.appendChild(tbody);//hozzáadjuk a táblázathoz a táblázat tőrzsét
 
 containerDiv.appendChild(tableDiv);//a tableDiv változó amely tartalmazza a table osztályú div-et hozzá adjuk a containerDiv-hez
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------------- FORM
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- FORM létrehozása
 const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
 
 const formSim = document.createElement('form');//létrehozzuk a form elementet
@@ -64,13 +64,17 @@ for(const fieldElement of fieldElementList){//egy for ciklussal végig iterláun
     input.id = fieldElement.fieldid;//az input id-ját megadjuk az elem fieldid tulajdonságával
     field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
     field.appendChild(input)//az inputot hozzáadjuk a divhez
+    field.appendChild(document.createElement('br'))//a divhez hozzáadunk a benne létrehozott sortörést
+    const error = document.createElement('span');//létrehozunk egy span elementet
+    error.className = 'error';//a span az 'error' osztályt kapja meg
+    field.appendChild(error);//a spant hozzáadjuk a fieldhez
 }
 
 const buttonFormSim = document.createElement('button');//létrehozzuk a gomb elementet
 buttonFormSim.textContent = 'hozzáadás';//a gomb belső szövegét feltöltjük
 formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
 
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- Hozzáadása a táblázathoz
 /**
  * létrehozunk egy addeventlistener függvényt amely a formon belül figyeli a submit eseményt
  */
@@ -78,9 +82,21 @@ formSim.addEventListener('submit', (e)=> {
     e.preventDefault();//megoldja hogy a weboldal betöltésénél ne történjen meg az esemény
     const valueObject = {}//létrehozunk egy objektumot
     const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
+    let valid = true;//létrehozunk egy booleant változó amely alapértéke true lesz || ezze a változóval fogjuk elérni hogy sikertelen validáció esetén ne lehessen semmit sem adni a táblázathoz
     for(const inputField of inputFields){//végig iterálunk az inputFields-en
+        const error = inputField.parentElement.querySelector('.error');//kiválasztjuk az összes span elementet amely az error osztályt tartalmazza
+        if(!error){//ha nem létezik olyan element amely tartalmazza az error osztályt hibát ír ki
+            console.error('nincs errorfield');//hibaüzenet kiiratása
+            return;//visszatérés
+        }
+        error.textContent = '';//kiürítjük a span elementeket tartalmát
+        if(inputField.value === ''){//ha az input értéke null vagy undefined akkor hibát ír ki és a valid változó értékét false-ra változtatja
+            error.textContent = 'Kotelezo megadni';//a hiba üzenet amelyt a span elementek kiiratnak
+            valid = false;//a valid értéke átváltozik falsera
+        }
         valueObject[inputField.id] = inputField.value;//az elem értékével feltöltjük a valueObject indexén lévő elemet amely az elem ID-ja lesz
     }
+    if(valid){//ha a validáció sikeres akkor hozzáadja a cellát a táblázathoz
     array.push(valueObject);//a valueObject-et felnyomjuk az arraybe
     const tableBodyRow = document.createElement('tr');//létrehozzuk a táblázat tőrzsének sorát
     tbody.appendChild(tableBodyRow);//hozzáadjuk a tbodyhoz a sort
@@ -96,6 +112,7 @@ formSim.addEventListener('submit', (e)=> {
     const zipCodeCell = document.createElement('td');//létrehozzuk azt a cellát amely tartalmazni fogja az irányítószámokat
     zipCodeCell.textContent = valueObject.cim;//a cellát feltöltjük a valueObject "zipcode" tulajdonság értékével
     tableBodyRow.appendChild(zipCodeCell);//a cellát hozzáadjuk a sorhoz
+    }
 })
 
 containerDiv.appendChild(formDiv);//a formDiv változó amely tartalmazza a div osztályú div-et hozzá adjuk a containerDiv-hez
