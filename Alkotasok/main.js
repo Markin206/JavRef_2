@@ -13,10 +13,49 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
     div.className = className;//a div className tulajdonságához hozzá adjuk a className paramétert
     return div;//vissza adjuk a div értéket
 }
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------------- TABLE
 const containerDiv = makeDiv('container');//a containerDiv változóban létrehozzuk a containert a makeDiv függvénnyel
 document.body.appendChild(containerDiv);//a containerDiv változót hozzáadjuk a body-hoz
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- FELTÖLTÉS
+const fileInput = document.createElement('input')//létrehozunk egy inputot
+containerDiv.appendChild(fileInput);//az inputot belerakjuk a container divbe
+fileInput.id='fileinput'//a file id-ja fileinput
+fileInput.type = 'file';//az input típusa file-ra alakítjuk át
+fileInput.addEventListener('change', (e) => {//lesz egy addeventListener amely az figyeli hogy változik-e bármi is a weboldalon
+    const file = e.target.files[0];//bekéri az első fájlt az inputból
+    const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
+    fileReader.onload = () => {//beolvassuk fájlt
+        const fileLines = fileReader.result.split('\n')//a fájlt szét szedjuk sorvégenkén
+        const removedHeadLines = fileLines.slice(1);//létrehozunk egy tömböt az első elem kihagyásával
+        for(const line of removedHeadLines){//végig iterálunk a tömbön
+            const trimmedLine = line.trim();//a sorban lévő stringből eltávolítjuk a szóközöket
+            const fields = trimmedLine.split(';');//feldaraboljuk a sort
+            const pers = {//létrehozunk egy objektumot
+                name: fields[0],//a name megkapja a feldarabolt sor 1. elemét
+                mufaj: fields[1],//a birth megkapja a feldarabolt sor 2. elemét
+                cim: fields[2]//a zipcode megkapja a feldarabolt sor 3. elemét
+            }
+            array.push(pers);//felnyomjuk a tömbe az objektumunkat
+            const tableBodyRow = document.createElement('tr');//létrehoztunk egy sort
+            tbody.appendChild(tableBodyRow);//a sort hozzáadjuk a tbodyhoz
+            
+            const nameCell = document.createElement('td');//létrehozzuk a cellát
+            nameCell.textContent = pers.name;//a cella tartalma megkapja az objektum name property-jét
+            tableBodyRow.appendChild(nameCell);//a cella hozzáadjuk a sorhoz
+        
+            const birthCell = document.createElement('td');//létrehozzuk a cellát
+            birthCell.textContent = pers.mufaj;//a cella tartalma megkapja az objektum birth property-jét
+            tableBodyRow.appendChild(birthCell);//a cella hozzáadjuk a sorhoz
+        
+            const zipCodeCell = document.createElement('td');//létrehozzuk a cellát
+            zipCodeCell.textContent = pers.cim;//a cella tartalma megkapja az objektum zipcode property-jét
+            tableBodyRow.appendChild(zipCodeCell);//a cella hozzáadjuk a sorhoz
+        }
+    }
+    fileReader.readAsText(file);//beolvasuk a szöveges fájlunkat
+})
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- TABLE
 const tableDiv = makeDiv('table');//a tableDiv változóban létrehozzuk a table-t a makeDiv függvénnyel
 const tableSim = document.createElement('table');//létrehozunk egy táblázatott
 tableDiv.appendChild(tableSim);//hozzáadjuk a table osztályú divhez a táblázatott
