@@ -3,6 +3,12 @@
   * az osztályban lévő konstruktorban történik meg a div-ek létrehozása
   */
 class Area{
+
+    #div;//a privát változó amely a divek tárolásával fog foglalkozni
+
+    get div(){//a div getter függvénye (eltárolja a divvet)
+        return this.#div;//visszatér a divvel
+    }
     /**
      * A konstruktor egy className string típusu paramtérerel dolgozik
      * elösször a konstruktorban kiválasztjuk a containeroop osztályt tartalmazó divet amely containerDiv változó lesz
@@ -19,8 +25,33 @@ class Area{
             containerDiv.className = 'containeroop';//a divhez className tulajdonságnak megkapja a containeroop-t
             document.body.appendChild(containerDiv);//a testtőrzshöz hozzáadjuk a container divet
         }
-        const div = document.createElement('div');//létrehozzuk a divet egy div nevű változóban
-        div.className = className;//a div className tulajdonságához hozzá adjuk a className paramétert
-        containerDiv.appendChild(div);//a div változót hozzáadjuk a containerDiv-hez
+        this.#div = document.createElement('div');//létrehozzuk a divet és hozzá rendeljük a privát változóhoz
+        this.#div.className = className;//a div privát változó className tulajdonságához hozzá rendeljük a className paramétert
+        containerDiv.appendChild(this.#div);//a div privát változót hozzáadjuk a containerDiv-hez
+    }
+}
+
+
+/**
+ * A table az Area osztály leszármazott osztálya
+ * Az osztályban a table divje és táblázat létrehozása történik meg
+ */
+class Table extends Area {
+    constructor(cssClass){//a table konstruktora ahol létrehozzuk a táblázatott
+        super(cssClass);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
+        const table = document.createElement('table');//létrehozunk egy table elementet
+        this.div.appendChild(table);//a table elementet hozzáadjuk a létrehozott divhez
+        const thead = document.createElement('thead');//létrehozzuk a fejlécet
+        table.appendChild(thead);//a fejlécet hozzáadjuk a táblázathoz
+        const theadRow = document.createElement('tr');//létrehozzuk a fejléc sorát
+        thead.appendChild(theadRow);//a fejléc megkapja a fejléc soárt
+        const theadCellArray = ['szerző', 'műfaj', 'cím'];//létrehozunk egy tömböt amely tartalmazza a fejléc celláinak szövegeit
+        for(const cellContent of theadCellArray){//végig iterálunk a tömb egyes elemein
+            const thcell = document.createElement('th');//létrehozunk egy fejléc cellát
+            thcell.innerText = cellContent;//a fejléc cella tartalma megkapja a tömb elemét
+            theadRow.appendChild(thcell);//a fejléc cellát hozzáadjuk a fejlécsorhoz
+        }
+        const tbody = document.createElement('tbody');//létrehozunk a táblázat tőrzsét
+        table.appendChild(tbody);//a táblázathoz hozzáadjuk a tőrzsét
     }
 }
