@@ -16,6 +16,25 @@ const makeDiv = (className) => {//függvény létrehozása egy bemeneti paramét
 const containerDiv = makeDiv('container');//a containerDiv változóban létrehozzuk a containert a makeDiv függvénnyel
 document.body.appendChild(containerDiv);//a containerDiv változót hozzáadjuk a body-hoz
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------- Letöltés gomb
+const exportButton = document.createElement('button');//létrehozzunk egy gombot
+exportButton.textContent = 'Letöltés';//gomb tartalmát feltöltjük egy string értékkel
+containerDiv.appendChild(exportButton);//a gombot hozzáadjuk a containerhez
+exportButton.addEventListener('click', () => {//a gombnak click eseményt figyelő addevenlistener
+    const link = document.createElement('a');//létrehozunk egy anchort
+    const contentArray = ['szerző;műfaj;cím']//létrehozzunk egy tömböt amely a file legfelső sorát tartalmazza
+    for(const pers of array){//végig iterálunk a töm elemein
+        contentArray.push(`${pers.name};${pers.mufaj};${pers.cim}`);//a contentarray tömbe felpusholjuk a a táblázat elemeit
+    }
+    const BOM = '\uFEFF'; // BOM karakter, ami segíti az Excel-t az UTF-8 felismerésében (a betük beolvasásnál volt probléma erre chatgpt kérdeztem meg hogy mi lehet a probléma, elvileg kódolási probléma a Windows-1252 és UTF-8 között)
+    const content = BOM+contentArray.join('\n');//a tömbött sorvégenként kombináljuk egy string-é
+    const file = new Blob([content])//eltároljuk az egységes stringet egy bloba mint nyers bináris adat
+    link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+    link.download = 'newdata.csv'//letöltjük az új fájlt newdata.csv néven
+    link.click();//linkek meghívjuk a beépített click függvényt
+    URL.revokeObjectURL(link.href);//kiürítjük az URL-t
+})
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------- FELTÖLTÉS
 const fileInput = document.createElement('input')//létrehozunk egy inputot
 containerDiv.appendChild(fileInput);//az inputot belerakjuk a container divbe
@@ -155,3 +174,4 @@ formSim.addEventListener('submit', (e)=> {
 })
 
 containerDiv.appendChild(formDiv);//a formDiv változó amely tartalmazza a div osztályú div-et hozzá adjuk a containerDiv-hez
+
