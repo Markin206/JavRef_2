@@ -15,4 +15,4 @@ const fieldArrayList = [{//létrehozunk egy tömböt amely tartalmaz 2 tulajdons
 const manager = new Manager()//inicializáljuk a manager osztályt
 const table = new Table('table', manager);//meghívjuk a Table osztályt és konstruktorával létrehozzuk a table osztályú div-et és létrehozzuk a táblázatott vele
 const form = new Form('form',fieldArrayList, manager);//meghívjuk a Form osztályt és konstruktorával létrehozzuk a form osztályú div-et és a bele tartozó formot is a megadott tömb által
-const fileUplad = new Upload('upload', manager);//meghívjuk az upload osztályt amely konstruktorával létrehozzuk gombját és megoldja hogy a feltöltött fájlok a manager tömbjébe jussanak és feltöltsük táblázatát
+const fileUplad = new UploadDownload('upload', manager);//meghívjuk az upload osztályt amely konstruktorával létrehozzuk gombját és megoldja hogy a feltöltött fájlok a manager tömbjébe jussanak és feltöltsük táblázatát

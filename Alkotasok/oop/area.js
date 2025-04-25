@@ -80,6 +80,7 @@ class Table extends Area {
             tbody.appendChild(tableBodyRow);//a sort hozzárendeljük a táblázat tőrzséhez
         })
     }
+
     /**
      * egy privát metódus amely a táblázat létrehozásáért felelős
      */
@@ -150,11 +151,13 @@ class Form extends Area {
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------IMPORT || EXPORT
 /**
   * az area leszarmazott osztálya
   * az osztály feladata a fájlok feltöltése a weboldalra
+  * és a táblázat letöltése
   */
-class Upload extends Area{
+class UploadDownload extends Area{
     /**
      * a konstruktor létrehoz egy gombot amely text filet
      * olvass be és a fájlt táblázatba helyezi
@@ -182,9 +185,26 @@ class Upload extends Area{
             }
             fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
         })
+
+        //-------------------------------------------------------------------------------------------------------EXPORT
+        const exportButton = document.createElement('button');//létrehozunk egy gombot
+        exportButton.textContent = 'Letöltés';//a gomb tartalmát feltöltjük egy string értékel
+        this.div.appendChild(exportButton);//a gombot hozzárendeljük a divhez
+        exportButton.addEventListener('click', () => {//egy addeventlistener amely click esemény esetén lefutt
+            const link = document.createElement('a');//létrehozunk egy link anchor
+            const content = this.manager.generateExportString();//meghívjuk a managerben a generateExportString metódust
+            const bom = '\uFEFF'; // BOM karakter hozzáadása az elejére
+            const file = new Blob([bom+content])//az egységes stringet eltároljuk egy blob objektumba nyers bináris adatként
+            link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+            link.download = 'newdata.csv'//a letöltés által newdata.csv néven töltjük le a fájlt
+            link.click();//meghívjuk a click függvényt
+            URL.revokeObjectURL(link.href);//kiürítjük a href URL-jét
+        })
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------FORMFIELD CLASS
 /**
   * Az osztály felelős a formon belüli input, labelek, spanek létrehozásáért egyben a fieldDiv létrehozásáért
   */

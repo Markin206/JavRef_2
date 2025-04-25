@@ -30,4 +30,16 @@ class Manager{
         this.#array.push(person);//hozzáaddja a személyt a tömbhöz
         this.#addWorkCallback(person);//meghívja a callbacket a person paraméterrel
     }
+
+    /**
+     * Az fájlnak létrehozz egy fejlécet és tartalmát feltölti
+     * @returns {string} Az exportált fájl tartalma string-ben visszaadva
+     */
+    generateExportString(){
+        const result = ['name;műfaj;cím']
+        for(const person of this.#array){
+            result.push(`${person.name};${person.mufaj};${person.cim}`);
+        }
+        return result.join('\n');
+    }
 }
