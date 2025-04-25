@@ -5,8 +5,14 @@
   */
 class Area{
 
-    #div;//a privát változó amely a divek tárolásával fog foglalkozni
+    /**
+     * @type {HTMLDivElement}
+     */
+    #div;//a privát div
 
+    /**
+     * @type {Manager}
+     */
     #manager//a privát változó amelyben eltároljuk a manager objektumot
 
     get div(){//a div getter függvénye (eltárolja a divvet)
@@ -20,7 +26,7 @@ class Area{
     /**
       * A konstruktor feladata a div elkészítése és osztálya beállítása paraméter szerint a privátmetódus által létrejött containerben
       * @param {string} className //a string paraméter amely a osztály nevet tartalmazza
-      * @param {object} manager A manager objektum, a személyek kezelésést szolgálja
+      * @param {Manager} manager A manager objektum, a személyek kezelésést szolgálja
       */
     constructor(className, manager){//konstruktor és string típusú className paramétere
         this.#manager = manager;// Inicializálja a manager-t
@@ -61,9 +67,9 @@ class Area{
      * @returns {HTMLButtonElement} a gomb amellyel viszatér
      */
     createButton(label){
-        const button = document.createElement('button');
-        button.textContent = label;
-        return button
+        const button = document.createElement('button');//létrehozzuk a gombot
+        button.textContent = label;//a gomb tartalmát feltöltjük a paraméterrel
+        return button//visszatérünk a gombbal
     }
 }
 
@@ -77,8 +83,7 @@ class Table extends Area {
      * //a table konstruktora ahol létrehozzuk a táblázatott és tőrzsét feltöltjük
      * a manager által
      * @param {string} cssClass ezzel a paraméterrel hozzuk létre a divet az area osztály konstruktorával
-     * @param {{
-     *   setAddWorkCallback: function(Function): void, setRenderTableCallback: function(Function): void}} manager a manager objektum amely a callback elérhetőségét okoza
+     * @param {{setAddWorkCallback: function(Function): void, setRenderTableCallback: function(Function): void}} manager a manager objektum amely a callback elérhetőségét okoza
      */
     constructor(cssClass, manager){
         super(cssClass, manager);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
@@ -128,6 +133,7 @@ class Table extends Area {
 
     /**
      * egy privát metódus amely a táblázat létrehozásáért felelős
+     * @returns {HTMLTableSectionElement} a visszaadot tbody element
      */
     #createTable(){
         const table = document.createElement('table');//létrehozunk egy table elementet
@@ -154,7 +160,11 @@ class Table extends Area {
  */
 class Form extends Area {
 
-    #formFieldArray
+    /**
+     * @type {{ fieldid: string, fieldLabel: string }[]}
+     */
+    #formFieldArray//privát tömb
+
     /**
      * //A form konstruktora ahol létrehozzuk a formot és annak fieldjeit
      * @param {string} cssClass az osztály amely a div osztálya lesz
@@ -222,7 +232,7 @@ class Form extends Area {
                 valid = false;//a valid értéke átváltozik falsera
             }
         }
-        return valid;
+        return valid;//a visszatérő validált érték (false vagy true)
     }
 
     /**
@@ -234,7 +244,7 @@ class Form extends Area {
         for(const formField of this.#formFieldArray){//az input értékein végig iterálunk
             valueObject[formField.id] = formField.value;//az objektum indexelt eleme megkapja az input tartalmát
         }
-        return valueObject;//visszatérünk
+        return valueObject;//visszatérünk az objektummal
     }
 }
 
@@ -308,9 +318,24 @@ class UploadDownload extends Area{
   * Az osztály felelős a formon belüli input, labelek, spanek létrehozásáért egyben a fieldDiv létrehozásáért
   */
 class FormField {
+    /**
+     * @type {string}
+     */
     #id;//privát változó
+
+    /**
+     * @type {HTMLInputElement}
+     */
     #inputElement;//privát változó
+
+    /**
+     * @type {HTMLLabelElement}
+     */
     #labelElement;//privát változó
+
+    /**
+     * @type {HTMLSpanElement}
+     */
     #errorElement;//privát változó
 
     get id(){//getter függvény az id-nak

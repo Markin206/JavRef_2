@@ -17,12 +17,10 @@ class Filter extends Area {
         this.div.appendChild(form);//a divhez hozzáadjuk a formot
         const select = document.createElement('select');//létrehozzuk a select-et
         form.appendChild(select);//a formhoz hozzáadjuk a selectet
-        const options = [{//létrehozunk egy üres tömböt amely tartalmazza a select opcióit
-            value: '',//értéke null || undefined
-            innerText: ''//tartalma üres
-        },
-        {value: 'birth',innerText: 'születési dátum'},//születés év értéket kapja meg az opció és tartalomként stringet kap
-        {value: 'zipcode',innerText: 'irányítószám'}]//irányítószám értéket kapja meg az opció és tartalomként stringet kap
+        const options = [//létrehozunk egy üres tömböt amely tartalmazza a select opcióit
+            {value: '',innerText: ''},//az üres opció amely esetén vissza áll az eredeti táblázat
+            {value: 'birth',innerText: 'születési dátum'},//születés év értéket kapja meg az opció és tartalomként stringet kap
+            {value: 'zipcode',innerText: 'irányítószám'}]//irányítószám értéket kapja meg az opció és tartalomként stringet kap
         for(const option of options){//végig iterálunk az options tömbön
             const optionElement = document.createElement('option');//létrehozunk egy option elementet
             optionElement.value = option.value;//értéknek megkapja a tömb element értékét
@@ -54,8 +52,6 @@ class Filter extends Area {
                     return true;//visszatér true-val
                 }
             })
-
-
         })
     }
 }

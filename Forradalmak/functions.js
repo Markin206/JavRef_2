@@ -57,7 +57,7 @@ const createTable = (container, callback) =>{
  * A függvény feladata az hogy a formot létrehozza és müködtese és validálja az inputokat és értékeit a táblázatba helyezze el
  * @param {HTMLTableSectionElement} tablebody a tbody amelybe belerakom az inputokban megadott értékeket
  * @param {HTMLDivElement} container a container amelybe bele helyezem a formot
- * @param {Array} personArray a tömb amelybe felpusholjuk a megadott input értékeke
+ * @param {{name: string, birth: string, zipcode: string}} personArray a tömb amelybe felpusholjuk a megadott input értékeke
  */
 const createForm = (tablebody, container, personArray) => {
     const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
@@ -123,7 +123,7 @@ const createForm = (tablebody, container, personArray) => {
  * A függvény által feltudjuk tölteni a fájlainkat a weboldalra
  * @param {HTMLTableSectionElement} tablebody 
  * @param {HTMLDivElement} container 
- * @param {array} personArray 
+ * @param {{name: string, birth: string, zipcode: string}} personArray 
  */
 const createFileUpload = (tablebody, container, personArray) => {
     const fileInput = makeInput('fileinput', 'file')//létrehozunk egy inputot a makeInput függvény alapján amely idja a fileInput lesz és típusa pedig file
@@ -171,7 +171,7 @@ const addRow = (object, tablebody) => {
 /**
  * A letöltésért felelős függvény
  * @param {HTMLDivElement} container a container div element amelybe a gombot belerakjuk
- * @param {Array} personArray a tömb amelyen végigiterálunk és elmentjük értékeit
+ * @param {{name: string, birth: string, zipcode: string}} personArray a tömb amelyen végigiterálunk és elmentjük értékeit
  */
 const createFileDownload = (container, personArray) => {
     const exportButton = document.createElement('button');//létrehozunk egy gombot
@@ -197,7 +197,7 @@ const createFileDownload = (container, personArray) => {
  * A függvény azért felel hogy a megadott tömböl kiszürjük az adatokat a callback segítségével
  * @param {Array} personArray ebből a függvényből szürünk
  * @param {function(*): boolean} callback a szűrési feltételt meghatározó függvény
- * @returns {Array} a szürt tömb
+ * @returns {{name: string, birth: string, zipcode: string}} a szürt tömb
  */
 const filter = (personArray, callback) => {
     const result = [];//létrehozunk egy üres tömböt
@@ -217,7 +217,7 @@ const filter = (personArray, callback) => {
  * és aztán ki is irattjuk
  * @param {HTMLDivElement} container a container div element amely tartalmazni fogly a select-et, input-ot, gomb-ot
  * @param {HTMLTableSectionElement} tablebody a tablebody amelybe a kiiratásnál dolgozunk
- * @param {Array} personArray az a tömb amelyt kiszűrünk
+ * @param {{name: string, birth: string, zipcode: string}} personArray az a tömb amelyt kiszűrünk
  */
 const createFilterForm = (container, tablebody, personArray ) => {
     const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével
