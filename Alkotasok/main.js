@@ -137,7 +137,7 @@ formSim.appendChild(buttonFormSim)//a gombot hozzáadjuk a fromhoz
  * létrehozunk egy addeventlistener függvényt amely a formon belül figyeli a submit eseményt
  */
 formSim.addEventListener('submit', (e)=> {
-    e.preventDefault();//megoldja hogy a weboldal betöltésénél ne történjen meg az esemény
+    e.preventDefault();//megakadályozza hogy az esemény frissítse a weboldalt
     const valueObject = {}//létrehozunk egy objektumot
     const inputFields = e.target.querySelectorAll('input');//kiválasztjuk az összes inputot amelyt vissza adjuk a inputFieldsbe
     let valid = true;//létrehozunk egy booleant változó amely alapértéke true lesz || ezze a változóval fogjuk elérni hogy sikertelen validáció esetén ne lehessen semmit sem adni a táblázathoz
@@ -175,3 +175,95 @@ formSim.addEventListener('submit', (e)=> {
 
 containerDiv.appendChild(formDiv);//a formDiv változó amely tartalmazza a div osztályú div-et hozzá adjuk a containerDiv-hez
 
+//--------------------------------------------------------------------------------------------------------------------------------------
+/**
+  * A függvény azért felel hogy a megadott tömböl kiszürjük az adatokat a callback segítségével
+  * @param {Array} personArray ebből a függvényből szürünk
+  * @param {function(*): boolean} callback a szűrési feltételt meghatározó függvény
+  * @returns {Array} a szürt tömb
+  */
+const filter = (personArray, callback) => {
+    const result = [];//létrehozunk egy üres tömböt
+    for(const element of personArray){//a paraméterben megadott tömbön végigiterálunk
+        if(callback(element)){//megnézi a callback függvényel hogy ez a elem berakhatő a szűrt tömbbe
+            result.push(element);//a szűrt tömbbe felpusholjuk az elementet
+        }
+    }
+    return result;//visszatérünk a resultal
+}
+
+const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével
+containerDiv.appendChild(filterFormDiv);//a divet hozzáadom a container divhez
+
+const formForFilter = document.createElement('form');//létrehozunk egy formot
+filterFormDiv.appendChild(formForFilter);//a formot hozzáadjuk a filter divhez
+const select = document.createElement('select');//létrehozunk egy selectet
+formForFilter.appendChild(select);//a létrehozott selectet hozzadjuk a formhoz
+const options = //létrehozzuk egy tömböt amely tartalmazza a szűrés opciókat
+[{value: '',innerText: ''},//alap érték || semmi által szürünk
+{value: 'mufaj',innerText: 'műfaj'},//évszám szerint szűrünk
+{value: 'name',innerText: 'szerző'}]//az irányítószám szerint szűrűnk
+for(const option of options){//végig megyünk a tömbön mely tartalmazza az opciókat
+    const optionElement = document.createElement('option');//létrehozunk egy option elementet
+    optionElement.value = option.value;//az option element értéke megkapja az elem értékét
+    optionElement.innerText = option.innerText//a opion element tartalmát feltöltjük az elem text értékével
+    select.appendChild(optionElement);//a selecthez hozzá appendeljük az optionElementet
+}
+
+const button = document.createElement('button');//létrehozunk egy gombot
+button.innerText = 'Szures';//tartalmát feltöltjük egy string értékkel
+formForFilter.appendChild(button);//a gombot hozzáadjuk a formhoz
+formForFilter.addEventListener('submit', (e) => {
+    e.preventDefault();//megakadályozza hogy az esemény frissítse a weboldalt
+    const select = e.target.querySelector('select');//kiválasztjuk az összes szűrő elementet
+
+    let rendezettArray = [];//a rendezett adatok tárolásáért felelős tömb
+
+    if (select.value === 'name') {//ha a selectnél a szerzőt választottuk ki akkor aszerint sorba rendezi(betűrend)
+        const tempArray = [...array];//az eredeti tömb másolata
+        while (tempArray.length > 0) {//amíg marad elem a másolatban
+            let legkisebbIndex = 0;//lekisebb index amely az 1. elemel kezd
+            for (let i = 1; i < tempArray.length; i++) {//végig iterálunk a másolaton
+                if (tempArray[i].name < tempArray[legkisebbIndex].name) {//ha az indexelt szerző neve kisebb mint a legkisebbIndexelt szerző indexe
+                    legkisebbIndex = i;//akkor frissíti a legkisebbIndex-et
+                }
+            }
+            rendezettArray.push(tempArray[legkisebbIndex]);//hozzáadjuk a rendezett tömbhöz
+            tempArray.splice(legkisebbIndex, 1);// eltávolítjuk a kiválasztott elemet a másolatból
+        }
+    } else if (select.value === 'mufaj') {//ha a selectnél a műfajt választottuk ki akkor aszerint sorba rendezi(betűrend)
+        // rendezés cím szerint betűrendben
+        const tempArray = [...array];//az eredeti tömb másolata
+        while (tempArray.length > 0) {//amíg marad elem a másolatban
+            let legkisebbIndex = 0;//lekisebb index amely az 1. elemel kezd
+            for (let i = 1; i < tempArray.length; i++) {//végig iterálunk a másolaton
+                if (tempArray[i].mufaj < tempArray[legkisebbIndex].mufaj) {//ha az indexelt szerző neve kisebb mint a legkisebbIndexelt szerző indexe
+                    legkisebbIndex = i;//akkor frissíti a legkisebbIndex-et
+                }
+            }
+            rendezettArray.push(tempArray[legkisebbIndex]);//hozzáadjuk a rendezett tömbhöz
+            tempArray.splice(legkisebbIndex, 1);// eltávolítjuk a kiválasztott elemet a másolatból
+        }
+    } else {//ha nincs semmi akkor visszatér az eredeti rendezetlen tömbre
+        rendezettArray = [...array];//a rendezett tömb megkapja az alap tömb értékeit
+    }
+
+    tbody.innerHTML = '';//kiürítjük a táblázat tőrzsét
+
+    for (const elem of rendezettArray) {//végig iterálunk a rendezett tömbön
+        const row = document.createElement('tr');//létrehozunk egy sort
+        tbody.appendChild(row);//hozzáadjuk a tőrzshöz a sort
+
+        const szerzoCell = document.createElement('td');//létrehozunk egy cella elemet amely a szerzők lesznek
+        szerzoCell.textContent = elem.name;//a cella elemeit feltöltjük az elem name értékével
+        row.appendChild(szerzoCell);//a cellát hozzárendeljük a sorhoz
+
+        const mufajCell = document.createElement('td');//létrehozunk egy cella elemet amely a műfajok lesznek
+        mufajCell.textContent = elem.mufaj;//a cella elemeit feltöltjük az elem mufaj értékével
+        row.appendChild(mufajCell);//a cellát hozzárendeljük a sorhoz
+
+        const cimCell = document.createElement('td');//létrehozunk egy cella elemet amely a címek lesznek
+        cimCell.textContent = elem.cim;//a cella elemeit feltöltjük az elem cim értékével
+        row.appendChild(cimCell);//a cellát hozzárendeljük a sorhoz
+    }
+});
