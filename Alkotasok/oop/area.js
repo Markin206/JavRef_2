@@ -54,6 +54,17 @@ class Area{
         cella.innerText = cellContent;//a cella tartalmát feltöltjük a cellContent paraméter alapján
         rowElement.appendChild(cella);//a parentElementhez hozzáadjuk a cellát
     }
+
+    /**
+     * A gomb létrehozása
+     * @param {string} label a gomb tartalma
+     * @returns {HTMLButtonElement} a gomb amellyel viszatér
+     */
+    createButton(label){
+        const button = document.createElement('button');
+        button.textContent = label;
+        return button
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------TABLE
@@ -66,25 +77,44 @@ class Table extends Area {
      * //a table konstruktora ahol létrehozzuk a táblázatott és tőrzsét feltöltjük
      * a manager által
      * @param {string} cssClass ezzel a paraméterrel hozzuk létre a divet az area osztály konstruktorával
-     * @param {object} manager a manager objektum amely a callback elérhetőségét okoza
+     * @param {{
+     *   setAddWorkCallback: function(Function): void, setRenderTableCallback: function(Function): void}} manager a manager objektum amely a callback elérhetőségét okoza
      */
     constructor(cssClass, manager){
         super(cssClass, manager);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
         const tbody = this.#createTable();//meghívjuk a privát függvényt és hozzáadjuk a tbody változóhoz
-        this.manager.setAddWorkCallback((pers) => {//meghívjuk a managerben lévő callback függvényt a pers paraméterrel amely meghívás esetén az új személy hozzáadásra kerül
-            this.#createRow(pers, tbody);//létrehozzuk a sort pers objektum és tbody element paraméterek alapján
-        })
-        this.manager.setRenderTableCallback((personArray) => {//frissítjük a setRenderTableCallback által a táblázatott
+        this.manager.setAddWorkCallback(this.#addPersonCallback(tbody))//meghívjuk a managerben lévő callback függvényt a privát metódussal
+        this.manager.setRenderTableCallback(this.#renderTableCallback(tbody))//frissítjük a setRenderTableCallback által a táblázatott a privát metódus paraméterel
+    }
+
+    /**
+     * létrehozunk egy sort a szerzőnek
+     * @param {HTMLTableSectionElement} tbody a táblázat tőrzse amelyhez hozzárendeljük a sorokat
+     * @returns {(person: { name: string, mufaj: string, cim: string }) => void} a szerző amelyt visszaadunk
+     */
+    #addPersonCallback(tbody){
+        return (person) => {
+            this.#createRow(person, tbody);
+        }
+    }
+
+    /**
+     * teljesen újrafrissítjük a táblázatott a function-nel
+     * @param {HTMLTableSectionElement} tbody a táblázat tőrzse amelyhez hozzárendeljük a sorokat
+     * @returns {(personArray: { name: string, mufaj: string, cim: string }[]) => void} a tömb amelyt frissítünk az új adatokal
+     */
+    #renderTableCallback(tbody){
+        return (personArray) => {
             tbody.innerHTML = '';//a táblázat tőrzsét kiürítjük
             for(const person of personArray){//végig iterálunk a tömbön amely tartalmazza a táblázat tartalmát
                 this.#createRow(person, tbody);//létrehozzuk a sorokat és cellákat a createRow által
             }
-        })
+        }
     }
 
     /**
      * a sort létrehozó privát function
-     * @param {Object} pers az objecktum amely tartalmazza a szerző adatai (neve, mufaj, cim)
+     * @param {{ name: string, mufaj: string, cim: string }} pers az objecktum amely tartalmazza a szerző adatai (neve, mufaj, cim)
      * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse amelyhez hozzárendeljük a sort
      */
     #createRow(pers, tablebody){
@@ -128,12 +158,22 @@ class Form extends Area {
     /**
      * //A form konstruktora ahol létrehozzuk a formot és annak fieldjeit
      * @param {string} cssClass az osztály amely a div osztálya lesz
-     * @param {Array} fieldElementList a tömb amely tartalmazza a field tulajdonságait
-     * @param {object} manager a manager amely által elérjük a managerben lévő tömböt amelyhez hozzáadjuk az új személyeket
+     * @param {{ fieldid: string, fieldLabel: string }[]} fieldElementList a tömb amely tartalmazza a field tulajdonságait
+     * @param {{ addPerson: function }} manager a manager amely által elérjük a managerben lévő tömböt amelyhez hozzáadjuk az új személyeket
      */
     constructor(cssClass, fieldElementList, manager){
         super(cssClass, manager);//meghívjuk az Area konstruktorát hogy létrehozzuk a Form div elementét
         this.#formFieldArray = []; //a privát változónak megadunk egy üres tömböt
+        const form = this.#createForm(fieldElementList); //meghívjuk a #createForm privát metódust amely létrehozza a formot és mezőket
+        form.addEventListener('submit', this.#formsubmitEventListener()); //a formhoz eseményfigyelőt rendelünk amely a submit eseményre reagál
+    }
+
+    /**
+     * Létrehozza a formot és a fieldjeit, hozzáadja a gombot is
+     * @param {{ fieldid: string, fieldLabel: string }[]} fieldElementList a mezők leírásait tartalmazó tömb
+     * @returns {HTMLFormElement} a létrehozott form elem
+     */
+    #createForm(fieldElementList){
         const form = document.createElement('form');//létrehozzunk egy formot
         this.div.appendChild(form);//az újonnan létrehozott divhez hozzáadjuk a formot
         for(const fieldElement of fieldElementList){//végig iterálunk a megadott tömbön
@@ -141,28 +181,60 @@ class Form extends Area {
             this.#formFieldArray.push(formField);//a privát tömbbe bepusholjuk a formfieldet
             form.appendChild(formField.getDiv());//a formhoz hozzadjuk a formfielden belül meghívott getDiv függvényt
         }
-        
+
         //----------------------------------------------------------------------------------------------Gomb és az új személyek hozzáadásért felelős addeventlistener
+
         const button = document.createElement('button');//létrehozunk egy gomb elementet
         button.textContent = 'hozzáadás';//a tartalmát feltöltjük a hozzáadás string értékkel
         form.appendChild(button)//a gombot hozzáadjuk a formhoz
-        form.addEventListener('submit', (e)=> {//létrehozzunk egy addeventlistenert amely a formon belül figyel a submit eseményre
+
+        return form;//visszatérés a formmal
+    }
+
+    /**
+     * A formhoz tartozó eseményfigyelő függvény, amely kezelni fogja az űrlap beküldését
+     * @returns {Function} a callback függvény amit a submit eseménykor hív meg
+     */
+    #formsubmitEventListener(){
+        return (e) => {//létrehozzunk egy addeventlistenert amely a formon belül figyel a submit eseményre
             e.preventDefault();//a weboldal betültése esetén az esemény nem fut le alapból
-            const valueObject = {};//létrehozunk egy üres objektumot
-            let valid = true;//létrehozunk egy booleant változó amely alapértéke true lesz || ezze a változóval fogjuk elérni hogy sikertelen validáció esetén ne lehessen semmit sem adni a táblázathoz
-            for(const formField of this.#formFieldArray){//az input értékein végig iterálunk
-                formField.error = '';//kiürítjük a formfield error(span) tartalmát
-                if(formField.value === ''){//ha az formfield input értéke null vagy undefined akkor hibát ír ki és a valid változó értékét false-ra változtatja
-                    formField.error = 'Kotelezo megadni';//a hiba üzenet amelyt a span elementek kiiratnak
-                    valid = false;//a valid értéke átváltozik falsera
-                }
-                valueObject[formField.id] = formField.value;//az objektum indexelt eleme megkapja az input tartalmát
-            }
+
+            let valid = this.#validateAllFields(); //validáció meghívása
+            const valueObject = this.#getValueObject(); //értékek lekérdezése
+
             if(valid){//ha a validáció sikeres akkor létrehozz egy új személyt(Work osztályú) és hozzáadja a managerben található tömbhöz
-            const person = new Work(valueObject.name, valueObject.mufaj, valueObject.cim);//létrehozunk egy új személyt(Work osztály) amely megkapja az inputok tartalmát az objektumon keresztül
-            this.manager.addPerson(person);//a manager addPerson függvényét meghívjuk amely által hozzáadjuk a managerben található tömbhöz és hozzáadjuk a táblázathoz
+                const person = new Work(valueObject.name, valueObject.mufaj, valueObject.cim);//létrehozunk egy új személyt(Work osztály) amely megkapja az inputok tartalmát az objektumon keresztül
+                this.manager.addPerson(person);//a manager addPerson függvényét meghívjuk amely által hozzáadjuk a managerben található tömbhöz és hozzáadjuk a táblázathoz
             }
-        })
+        }
+    }
+
+    /**
+     * Validálja az inputokat
+     * @returns {boolean} a validáció értéke ha mindegyik jó akkor true
+     */
+    #validateAllFields(){
+        let valid = true;//létrehozunk egy booleant változó amely alapértéke true lesz || ezze a változóval fogjuk elérni hogy sikertelen validáció esetén ne lehessen semmit sem adni a táblázathoz
+        for(const formField of this.#formFieldArray){//az input értékein végig iterálunk
+            formField.error = '';//kiürítjük a formfield error(span) tartalmát
+            if(formField.value === ''){//ha az formfield input értéke null vagy undefined akkor hibát ír ki és a valid változó értékét false-ra változtatja
+                formField.error = 'Kotelezo megadni';//a hiba üzenet amelyt a span elementek kiiratnak
+                valid = false;//a valid értéke átváltozik falsera
+            }
+        }
+        return valid;
+    }
+
+    /**
+     * Egy objektumba összegyűjti az összes input mező aktuális értékét
+     * @returns {[id: string]: string }} egy objektum amelyben az inputok id-jához tartozó értékek szerepelnek
+     */
+    #getValueObject(){
+        const valueObject = {};//létrehozunk egy üres objektumot
+        for(const formField of this.#formFieldArray){//az input értékein végig iterálunk
+            valueObject[formField.id] = formField.value;//az objektum indexelt eleme megkapja az input tartalmát
+        }
+        return valueObject;//visszatérünk
     }
 }
 
@@ -177,7 +249,7 @@ class UploadDownload extends Area{
      * a konstruktor létrehoz egy gombot amely text filet
      * olvass be és a fájlt táblázatba helyezi
      * @param {string} cssClass a div osztalya
-     * @param {object} manager ez foglalkozik a személyel
+     * @param {{ addPerson: function(Object): void, generateExportString: function(): string }} manager ez foglalkozik a személyel
      */
     constructor(cssClass, manager){
         super(cssClass, manager);//meghívjuk az area konstruktorát
@@ -185,7 +257,35 @@ class UploadDownload extends Area{
         input.id ='fileinput';//az input id-ja fileInput lesz
         input.type ='file'//input típusa pedig file
         this.div.appendChild(input);//hozzáadjuk a divhez
-        input.addEventListener('change', (e)=>{//egy addeventlistener amely nézi a htmlElement változásait
+        input.addEventListener('change', this.#importInputEventListener())//egy addeventlistener amely nézi a htmlElement változásait
+        //-------------------------------------------------------------------------------------------------------EXPORT
+        const exportButton = document.createElement('button');//létrehozunk egy gombot
+        exportButton.textContent = 'Letöltés';//a gomb tartalmát feltöltjük egy string értékel
+        this.div.appendChild(exportButton);//a gombot hozzárendeljük a divhez
+        exportButton.addEventListener('click', this.#exportButtonEventListener())//egy addeventlistener amely click esemény esetén lefutt
+    }
+    /**
+     * Privát metódus amely visszaadja az exportálást végző eseményfigyelőt
+     * @returns {() => void} Eseménykezelő függvény
+     */
+    #exportButtonEventListener() {
+        return () => {
+            const link = document.createElement('a');//létrehozunk egy link anchor
+            const content = this.manager.generateExportString();//meghívjuk a managerben a generateExportString metódust
+            const bom = '\uFEFF'; // BOM karakter hozzáadása az elejére
+            const file = new Blob([bom + content])//az egységes stringet eltároljuk egy blob objektumba nyers bináris adatként
+            link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
+            link.download = 'newdata.csv'//a letöltés által newdata.csv néven töltjük le a fájlt
+            link.click();//meghívjuk a click függvényt
+            URL.revokeObjectURL(link.href);//kiürítjük a href URL-jét
+        }
+    }
+    /**
+     * Privát metódus amely visszaadja az importálást végző eseményfigyelőt
+     * @returns {(e: Event) => void} Eseménykezelő függvény fájl betöltéshez
+     */
+    #importInputEventListener() {
+        return (e) => {
             const file = e.target.files[0];//kiválasztjuk a fájlt
             const fileReader = new FileReader();//létrehozunk egy FileReader-t amely által beolvashatunk fájlokat
             fileReader.onload = () => {//beolvassuk a fájlt
@@ -199,25 +299,9 @@ class UploadDownload extends Area{
                 }
             }
             fileReader.readAsText(file);//megoldja hogy a fájlunkat text fájlként olvassa be
-        })
-
-        //-------------------------------------------------------------------------------------------------------EXPORT
-        const exportButton = document.createElement('button');//létrehozunk egy gombot
-        exportButton.textContent = 'Letöltés';//a gomb tartalmát feltöltjük egy string értékel
-        this.div.appendChild(exportButton);//a gombot hozzárendeljük a divhez
-        exportButton.addEventListener('click', () => {//egy addeventlistener amely click esemény esetén lefutt
-            const link = document.createElement('a');//létrehozunk egy link anchor
-            const content = this.manager.generateExportString();//meghívjuk a managerben a generateExportString metódust
-            const bom = '\uFEFF'; // BOM karakter hozzáadása az elejére
-            const file = new Blob([bom+content])//az egységes stringet eltároljuk egy blob objektumba nyers bináris adatként
-            link.href = URL.createObjectURL(file);//a link href property-je megkapja az újonnan létrehozott URL objektumot amely a fájlból készült
-            link.download = 'newdata.csv'//a letöltés által newdata.csv néven töltjük le a fájlt
-            link.click();//meghívjuk a click függvényt
-            URL.revokeObjectURL(link.href);//kiürítjük a href URL-jét
-        })
+        }
     }
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------FORMFIELD CLASS
 /**

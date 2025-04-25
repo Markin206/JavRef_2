@@ -3,9 +3,20 @@
   * Egyben tárolja személyeket és végez callback függvényeket meghívás esetén
   */
 class Manager{
+    /**
+     * @type {{name: string, mufaj: string, cim: string}[]}
+     */
     #array;//privát tulajdonság/property
+
+    /**
+     * @type {Function}
+     */
     #addWorkCallback;//privát tulajdonság/property
+    /**
+     * @type {Function}
+     */
     #renderTableCallback;//privát tulajdonság
+
     /**
      * a konstruktor eltárolja a jövőbeli személyeket
      */
@@ -32,7 +43,7 @@ class Manager{
     /**
      * A person paramétert hozzáadjuk a tömbhöz amely tartalmazni fogja a hozzáadott személyeket
      * és callback által fríssiti a táblázatott
-     * @param {Work} person a személy amely Work osztályú típusu|| a paraméter amelyt hozzáadjuk a tömbhöz és táblázothoz
+     * @param {{name: string, mufaj: string, cim: string}} person a személy amely Work osztályú típusu|| a paraméter amelyt hozzáadjuk a tömbhöz és táblázothoz
      */
     addPerson(person){
         this.#array.push(person);//hozzáaddja a személyt a tömbhöz
@@ -54,7 +65,7 @@ class Manager{
     /**
      * A function feladata a táblázat sorbarendezése a selectek által és
      * frissíti a táblázatott
-     * @param {Object} select a select amelyt a felhasználó kiválasztott hogy aszerint rendezzük
+     * @param {HTMLSelectElement} select a select amelyt a felhasználó kiválasztott hogy aszerint rendezzük
      */
     sort(select){
         let rendezettArray = [];//a rendezett adatok tárolásáért felelős tömb

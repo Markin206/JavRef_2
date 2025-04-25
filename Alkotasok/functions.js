@@ -28,7 +28,7 @@ const createCell = (cell, cellContent, rowElement) =>{
  * Létrehozzuk a sort és a createCell segítségével fel is töltjük cellákkal amelyek
  * tartalmát a megadott paraméterek által
  * és persze hozzárendeljük a sort a megadott tablebodyhoz
- * @param {Object || Array} object az objektum amely tartalmazza a szerző nevét művét és annak címét tehát a cellák adatait
+ * @param {{name: string, mufaj: string, cim: string}} object az objektum amely tartalmazza a szerző nevét művét és annak címét tehát a cellák adatait
  * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse amelyhez hozzáakarjuk adni
  */
 const addRow = (object, tablebody) => {
@@ -41,9 +41,9 @@ const addRow = (object, tablebody) => {
 
 /**
   * A függvény azért felel hogy a megadott tömböl kiszürjük az adatokat a callback segítségével
-  * @param {Array} personArray ebből a függvényből szürünk
+  * @param {{ name: string, mufaj: string, cim: string }[]}} personArray ebből a függvényből szürünk
   * @param {function(*): boolean} callback a szűrési feltételt meghatározó függvény
-  * @returns {Array} a szürt tömb
+  * @returns {{ name: string, mufaj: string, cim: string }[]}} a szürt tömb
   */
 const filter = (personArray, callback) => {
     const result = [];//létrehozunk egy üres tömböt
@@ -59,7 +59,7 @@ const filter = (personArray, callback) => {
 /**
  * A file-ok exportálásért felelős function
  * @param {HTMLDivElement} container a container amelyhez hozzárendeljük a gombot
- * @param {Array} personArray a tömb amely tartalmazza a táblázatt elemeit és amin végig iterálunk beolvasáskor
+ * @param {{ name: string, mufaj: string, cim: string }[]} personArray a tömb amely tartalmazza a táblázatt elemeit és amin végig iterálunk beolvasáskor
  */
 const createFileDownload = ( container, personArray) => {
     const exportButton = document.createElement('button');//létrehozzunk egy gombot
@@ -87,7 +87,7 @@ const createFileDownload = ( container, personArray) => {
  * létrehozza a gombot és megoldja hogy a text tipusú file-okat feltöltse a táblázatba
  * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse ahova beszúrjuk a file adatait
  * @param {HTMLDivElement} container a container amelyhez hozzáadjuk az inputot
- * @param {Array} personArray a tömb amelybe felpusholjuk a file adatait
+ * @param {{ name: string, mufaj: string, cim: string }[]} personArray a tömb amelybe felpusholjuk a file adatait
  */
 const createFileUpload = (tablebody, container, personArray) => {
     const fileInput = document.createElement('input')//létrehozunk egy inputot
@@ -144,7 +144,7 @@ const createTable = (container, callback) => {
  * A form létrehozása és az inputok értékeinek berakása a táblázatba
  * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse amelyhez hozzáadjuk a sorokat és cellákat
  * @param {HTMLDivElement} container a container amelyhez hozzáadjuk a formot
- * @param {Array} personArray a tömb amelybe felpusholjuk az input adatait
+ * @param {{ name: string, mufaj: string, cim: string }[]} personArray a tömb amelybe felpusholjuk az input adatait
  */
 const createForm = (tablebody, container, personArray) => {
     const formDiv = makeDiv('form');//létrehozunk egy divet amely a form osztályt tartalmazza a makeDiv függvény által
@@ -220,7 +220,7 @@ const createForm = (tablebody, container, personArray) => {
  * a rendezés elvégzése
  * @param {HTMLDivElement} container a container element amelyhez hozzárendeljük a formot 
  * @param {HTMLTableSectionElement} tablebody a tablebody amelhyez a rendezés során hozzáadjuk a sorokat és cellákat
- * @param {Array} personArray a tömb amelyet lemásolunk hogy dolgozhassunk vele
+ * @param {{ name: string, mufaj: string, cim: string }[]} personArray a tömb amelyet lemásolunk hogy dolgozhassunk vele
  */
 const createFilterForm = (container, tablebody, personArray ) => {
     const filterFormDiv = makeDiv('filterForm')//létrehozunk egy divet amely a filterForm osztály nevet kapja meg a makeDiv függvény segítségével

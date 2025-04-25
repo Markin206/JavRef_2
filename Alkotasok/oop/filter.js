@@ -7,7 +7,7 @@ class Filter extends Area {
      * a filter osztály konstruktora ahol létrehozzuk a rendezés/szűrés gombját
      * és meghívjuk a sort függvényt a manager osztályból amely által rendezzük a táblázatott
      * @param {string} cssclass ezzel a paraméterrel hozzuk létre a divet az area osztály konstruktorával
-     * @param {object} manager a manager objektum amely a callback elérhetőségét okoza
+     * @param {{sort: (select: HTMLSelectElement) => void}}} manager a manager objektum amely a callback elérhetőségét okoza
      */
     constructor(cssclass, manager){
         super(cssclass, manager);//meghívjuk az Area osztály konstruktorát (létrehozza a divet)
