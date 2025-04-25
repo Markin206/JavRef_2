@@ -5,12 +5,20 @@
 class Manager{
     #array;//privát tulajdonság/property
     #addWorkCallback;//privát tulajdonság/property
-
+    #renderTableCallback;//privát tulajdonság
     /**
      * a konstruktor eltárolja a jövőbeli személyeket
      */
     constructor(){
         this.#array = []//a személyek tárolására szánt tömb
+    }
+
+    /**
+     * egy setter függvény amely arra szolgál hogy frissítse a táblázatott
+     * @param {Function} callback a callback meghivásakor meghívott függvény
+     */
+    setRenderTableCallback(callback){
+        this.#renderTableCallback = callback;
     }
 
     /**
@@ -41,5 +49,44 @@ class Manager{
             result.push(`${person.name};${person.mufaj};${person.cim}`);
         }
         return result.join('\n');
+    }
+
+    /**
+     * A function feladata a táblázat sorbarendezése a selectek által és
+     * frissíti a táblázatott
+     * @param {Object} select a select amelyt a felhasználó kiválasztott hogy aszerint rendezzük
+     */
+    sort(select){
+        let rendezettArray = [];//a rendezett adatok tárolásáért felelős tömb
+
+        if (select.value === 'name') {//ha a selectnél a szerzőt választottuk ki akkor aszerint sorba rendezi(betűrend)
+            const tempArray = [...this.#array];//az eredeti tömb másolata
+            while (tempArray.length > 0) {//amíg marad elem a másolatban
+                let legkisebbIndex = 0;//lekisebb index amely az 1. elemel kezd
+                for (let i = 1; i < tempArray.length; i++) {//végig iterálunk a másolaton
+                    if (tempArray[i].name < tempArray[legkisebbIndex].name) {//ha az indexelt szerző neve kisebb mint a legkisebbIndexelt szerző indexe
+                        legkisebbIndex = i;//akkor frissíti a legkisebbIndex-et
+                    }
+                }
+                rendezettArray.push(tempArray[legkisebbIndex]);//hozzáadjuk a rendezett tömbhöz
+                tempArray.splice(legkisebbIndex, 1);// eltávolítjuk a kiválasztott elemet a másolatból
+            }
+        } else if (select.value === 'mufaj') {//ha a selectnél a műfajt választottuk ki akkor aszerint sorba rendezi(betűrend)
+            // rendezés cím szerint betűrendben
+            const tempArray = [...this.#array];//az eredeti tömb másolata
+            while (tempArray.length > 0) {//amíg marad elem a másolatban
+                let legkisebbIndex = 0;//lekisebb index amely az 1. elemel kezd
+                for (let i = 1; i < tempArray.length; i++) {//végig iterálunk a másolaton
+                    if (tempArray[i].mufaj < tempArray[legkisebbIndex].mufaj) {//ha az indexelt szerző neve kisebb mint a legkisebbIndexelt szerző indexe
+                        legkisebbIndex = i;//akkor frissíti a legkisebbIndex-et
+                    }
+                }
+                rendezettArray.push(tempArray[legkisebbIndex]);//hozzáadjuk a rendezett tömbhöz
+                tempArray.splice(legkisebbIndex, 1);// eltávolítjuk a kiválasztott elemet a másolatból
+            }
+        } else {//ha nincs semmi akkor visszatér az eredeti rendezetlen tömbre
+            rendezettArray = [...this.#array];//a rendezett tömb megkapja az alap tömb értékeit
+        }
+        this.#renderTableCallback(rendezettArray);//meghívjuk a callbacket hogy frissítsük a táblázatott
     }
 }

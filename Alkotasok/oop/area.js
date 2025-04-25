@@ -72,14 +72,29 @@ class Table extends Area {
         super(cssClass, manager);//meghívjuk az Area konstruktorát és létrehozunk egy divet vele
         const tbody = this.#createTable();//meghívjuk a privát függvényt és hozzáadjuk a tbody változóhoz
         this.manager.setAddWorkCallback((pers) => {//meghívjuk a managerben lévő callback függvényt a pers paraméterrel amely meghívás esetén az új személy hozzáadásra kerül
-            const tableBodyRow = document.createElement('tr');//létrehozunk a táblázat tőrzsének sorát
-            
-            this.createCell('td',pers.name, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző nevét tartalmazza
-            this.createCell('td', pers.mufaj, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének műfaját tartalmazza
-            this.createCell('td',pers.cim,tableBodyRow)//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének címét tartalmazza
-            tbody.appendChild(tableBodyRow);//a sort hozzárendeljük a táblázat tőrzséhez
+            this.#createRow(pers, tbody);//létrehozzuk a sort pers objektum és tbody element paraméterek alapján
+        })
+        this.manager.setRenderTableCallback((personArray) => {//frissítjük a setRenderTableCallback által a táblázatott
+            tbody.innerHTML = '';//a táblázat tőrzsét kiürítjük
+            for(const person of personArray){//végig iterálunk a tömbön amely tartalmazza a táblázat tartalmát
+                this.#createRow(person, tbody);//létrehozzuk a sorokat és cellákat a createRow által
+            }
         })
     }
+
+    /**
+     * a sort létrehozó privát function
+     * @param {Object} pers az objecktum amely tartalmazza a szerző adatai (neve, mufaj, cim)
+     * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse amelyhez hozzárendeljük a sort
+     */
+    #createRow(pers, tablebody){
+        const tableBodyRow = document.createElement('tr');//létrehozzuk a sort
+        this.createCell('td',pers.name, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző nevét tartalmazza
+        this.createCell('td', pers.mufaj, tableBodyRow);//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének műfaját tartalmazza
+        this.createCell('td',pers.cim,tableBodyRow)//meghívjuk az area osztály createCell metódusát amelyel létrehozunk egy cellát amely szerző művének címét tartalmazza
+        tablebody.appendChild(tableBodyRow);//a paraméterhez hozzárendeljük a sort
+    }
+
 
     /**
      * egy privát metódus amely a táblázat létrehozásáért felelős

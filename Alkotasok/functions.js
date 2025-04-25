@@ -28,7 +28,7 @@ const createCell = (cell, cellContent, rowElement) =>{
  * Létrehozzuk a sort és a createCell segítségével fel is töltjük cellákkal amelyek
  * tartalmát a megadott paraméterek által
  * és persze hozzárendeljük a sort a megadott tablebodyhoz
- * @param {Object || Array} object az objektum amely tartalmazza a szerző nevét művét és annak címét theát a cellák adatait
+ * @param {Object || Array} object az objektum amely tartalmazza a szerző nevét művét és annak címét tehát a cellák adatait
  * @param {HTMLTableSectionElement} tablebody a táblázat tőrzse amelyhez hozzáakarjuk adni
  */
 const addRow = (object, tablebody) => {
